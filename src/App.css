@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+#root {
+  width: 100%;
+  text-align: center;
+}
