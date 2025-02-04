@@ -51,7 +51,7 @@ const FavoritePokemonList = () => {
       <div className="w-full flex justify-start p-4">
         <BackButton />
       </div>
-      <div className="text-center mb-8">
+      <div className="w-full flex justify-center text-center mb-8">
         <h1 className="text-4xl font-bold capitalize mb-2">Favoritos</h1>
       </div>
 

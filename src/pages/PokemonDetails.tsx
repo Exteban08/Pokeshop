@@ -13,7 +13,6 @@ const PokemonDetails = () => {
   const { theme } = useTheme();
   const { id } = useParams<{ id: string }>();
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
-  console.log("🚀 ~ PokemonDetails ~ pokemon:", pokemon);
 
   useEffect(() => {
     const fetchDetails = async () => {

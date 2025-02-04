@@ -2,7 +2,7 @@ export interface Pokemon {
   id: number;
   name: string;
   price: number;
-  url: string;
+  url?: string;
 }
 
 interface PokemonStat {
@@ -44,7 +44,6 @@ export interface PokemonDetails {
 export interface CartItem {
   pokemon: Pokemon;
   quantity: number;
-  price: number;
 }
 
 export interface CartState {

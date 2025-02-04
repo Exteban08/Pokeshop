@@ -30,29 +30,34 @@ export const cartReducer = (
       };
     }
 
-    case "REMOVE_FROM_CART": {
-      const itemToRemove = state.items.find(
-        (item) => item.pokemon.id === action.payload
-      );
-
-      if (!itemToRemove) return state;
-
-      if (itemToRemove.quantity > 1) {
-        return {
-          ...state,
-          items: state.items.map((item) =>
-            item.pokemon.id === action.payload
-              ? { ...item, quantity: item.quantity - 1 }
-              : item
-          ),
-          total: state.total - itemToRemove.pokemon.price,
-        };
-      }
+    case "UPDATE_QUANTITY": {
+      const { pokemon, quantity } = action.payload;
 
       return {
         ...state,
+        items: state.items.map((item) =>
+          item.pokemon.id === pokemon.id ? { ...item, quantity } : item
+        ),
+        total: state.items.reduce((acc, item) => {
+          if (item.pokemon.id === pokemon.id) {
+            return acc + item.pokemon.price * quantity;
+          }
+          return acc + item.pokemon.price * item.quantity;
+        }, 0),
+      };
+    }
+
+    case "REMOVE_FROM_CART": {
+      return {
+        ...state,
         items: state.items.filter((item) => item.pokemon.id !== action.payload),
-        total: state.total - itemToRemove.pokemon.price,
+        total: state.items.reduce(
+          (acc, item) =>
+            item.pokemon.id !== action.payload
+              ? acc + item.pokemon.price * item.quantity
+              : acc,
+          0
+        ),
       };
     }
 
@@ -60,19 +65,7 @@ export const cartReducer = (
       return {
         items: [],
         total: 0,
-        discount: 0,
       };
-
-    case "APPLY_DISCOUNT": {
-      const discount = action.payload;
-      const discountedTotal = state.total * (1 - discount / 100);
-
-      return {
-        ...state,
-        discount,
-        total: discountedTotal,
-      };
-    }
 
     default:
       return state;

@@ -177,14 +177,14 @@ const Home = () => {
         })}
       </div>
       {pokemonList.length > 1 && (
-        <div className="w-full flex gap-4 items-center justify-center">
+        <div className="w-full flex gap-4 items-center justify-center pb-4">
           {currentPage !== 1 && (
-            <Button onClick={handlePreviousPage}>
+            <Button onClick={handlePreviousPage} className="w-10 h-8">
               <GrFormPrevious />
             </Button>
           )}
           <span> Página {currentPage} </span>
-          <Button onClick={handleNextPage}>
+          <Button onClick={handleNextPage} className="w-10 h-8">
             <GrFormNext />
           </Button>
         </div>

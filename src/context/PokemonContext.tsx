@@ -14,7 +14,7 @@ interface PokemonContextType {
   addToCart: (pokemon: Pokemon) => void;
   removeFromCart: (pokemonId: number) => void;
   clearCart: () => void;
-  applyDiscount: (discount: number) => void;
+  updateQuantity: (pokemon: Pokemon, quantity: number) => void;
 }
 
 export const PokemonContext = createContext<PokemonContextType | undefined>(

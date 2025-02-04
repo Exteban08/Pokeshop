@@ -1,4 +1,4 @@
-import { GrFormPrevious } from "react-icons/gr";
+import { IoMdHome } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/useTheme";
 import Button from "./Button";
@@ -9,14 +9,14 @@ const BackButton = () => {
 
   return (
     <Button
-      onClick={() => navigate(-1)}
-      className={`w-10 h-10 ${
+      onClick={() => navigate("/")}
+      className={`w-10 h-10 border ${
         theme === "dark"
           ? "bg-gray-900 hover:bg-gray-800"
-          : " bg-white hover:bg-gray-100"
+          : " bg-white hover:bg-gray-200 border border-black"
       } rounded-full`}
     >
-      <GrFormPrevious
+      <IoMdHome
         className={`${theme === "dark" ? "text-white" : "text-black"}`}
       />
     </Button>
