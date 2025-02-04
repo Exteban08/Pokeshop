@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   getPokemonTypes,
   getPokemonDetails,
-  getPokemonListByType,
   getPokemonList,
 } from "../services/pokemonApi";
 import { usePokemonContext } from "../context/usePokemonContext";
@@ -12,7 +11,6 @@ import { SiPokemon } from "react-icons/si";
 import { IoSunny, IoCloseSharp } from "react-icons/io5";
 import { MdOutlineCatchingPokemon } from "react-icons/md";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
-import { PokemonDetails } from "../types/pokemon";
 import { useNavigate } from "react-router-dom";
 import PokemonCard from "../components/PokemonCard";
 import Cart from "../components/Cart";
@@ -20,25 +18,30 @@ import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import FilterInput from "../components/FilterInput";
 import { useCartContext } from "../context/useCartContext";
-import { useFetchPokemonPaginated } from "../hooks/useFetchPokemonsPaginated";
+import { useFetchPokemonsPaginated } from "../hooks/useFetchPokemonsPaginated";
+import { useFetchPokemonsByType } from "../hooks/useFetchPokemonsByType";
 
 const Home = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  console.log("🚀 ~ Home ~ selectedType:", selectedType);
   const [types, setTypes] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [pokemonNames, setPokemonNames] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const { pokemons, addPokemon, addPokemons } = usePokemonContext();
-  const { fetchPokemonsPaginated } = useFetchPokemonPaginated({ pokemonNames });
+
+  const { pokemons, addPokemon } = usePokemonContext();
+  const { isCartOpen, setIsCartOpen } = useCartContext();
+
+  const { fetchPokemonsPaginated } = useFetchPokemonsPaginated();
+  const { fetchPokemonsByType } = useFetchPokemonsByType();
+
   const renderPokemons = pokemonNames
     .map((pokemonName) => pokemons[pokemonName])
     .filter(Boolean);
-
-  const { isCartOpen, setIsCartOpen } = useCartContext();
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -53,71 +56,54 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchPokemonList = async () => {
-      const pokemonList = await getPokemonList(currentPage);
-      setPokemonNames(pokemonList.map(({ name }) => name));
-    };
-
-    fetchPokemonList();
-  }, [currentPage]);
-
-  useEffect(() => {
     if (!selectedType && !search) {
       setIsLoading(true);
-      setError(null);
 
-      fetchPokemonsPaginated();
+      const fetchCurrentPagePokemons = async () => {
+        const pokemonListResponse = await getPokemonList(currentPage);
+        const pokemonList = pokemonListResponse.map(({ name }) => name);
+        fetchPokemonsPaginated(pokemonList);
+        setPokemonNames(pokemonList);
+      };
+
+      fetchCurrentPagePokemons();
       setIsLoading(false);
     }
-  }, [fetchPokemonsPaginated, search, selectedType]);
+  }, [fetchPokemonsPaginated, currentPage, search, selectedType]);
 
   useEffect(() => {
-    if (!selectedType) {
-      setCurrentPage(1);
-      return;
+    if (selectedType) {
+      setSearch("");
+      setIsLoading(true);
+
+      const getPokemonsByType = async () => {
+        const pokemonNamesByType = await fetchPokemonsByType(selectedType);
+        setPokemonNames(pokemonNamesByType);
+      };
+
+      getPokemonsByType();
+      setIsLoading(false);
     }
-
-    setIsLoading(true);
-    setError(null);
-    setSearch("");
-
-    const filterPokemon = async () => {
-      const pokemonList = await getPokemonListByType(selectedType);
-      setPokemonNames(pokemonList.map(({ pokemon }) => pokemon.name));
-      const pokemonsPromises = await Promise.all(
-        pokemonList.map(({ pokemon }) => {
-          return getPokemonDetails(pokemon.name);
-        })
-      );
-      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
-        (pokemon): pokemon is PokemonDetails => pokemon !== null
-      );
-      addPokemons(filteredPokemons);
-    };
-
-    filterPokemon();
-    setIsLoading(false);
-  }, [selectedType, addPokemons]);
+  }, [fetchPokemonsByType, selectedType]);
 
   useEffect(() => {
-    if (!search) return;
+    if (search) {
+      setSelectedType(null);
+      setIsLoading(true);
 
-    setIsLoading(true);
-    setError(null);
-    setSelectedType(null);
+      const fetchPokemon = async () => {
+        const pokemon = await getPokemonDetails(search);
 
-    const fetchPokemon = async () => {
-      const pokemon = await getPokemonDetails(search);
+        if (pokemon) {
+          setPokemonNames([pokemon.name]);
+          addPokemon(pokemon);
+        }
+      };
 
-      if (pokemon) {
-        setPokemonNames([pokemon.name]);
-        addPokemon(pokemon);
-      }
-    };
-
-    fetchPokemon();
-    setIsLoading(false);
-  }, [addPokemon, search, selectedType]);
+      fetchPokemon();
+      setIsLoading(false);
+    }
+  }, [addPokemon, search]);
 
   useEffect(() => {
     const fetchTypes = async () => {
@@ -129,7 +115,6 @@ const Home = () => {
   }, []);
 
   if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div

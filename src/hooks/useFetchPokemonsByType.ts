@@ -1,14 +1,20 @@
 import { useCallback } from "react";
 import { usePokemonContext } from "../context/usePokemonContext";
-import { getPokemonDetails } from "../services/pokemonApi";
+import {
+  getPokemonDetails,
+  getPokemonListByType,
+} from "../services/pokemonApi";
 import { PokemonDetails } from "../types/pokemon";
 
-export const useFetchPokemonsPaginated = () => {
+export const useFetchPokemonsByType = () => {
   const { pokemons, addPokemons } = usePokemonContext();
 
-  const fetchPokemonsPaginated = useCallback(async (pokemonNames: string[]) => {
+  const fetchPokemonsByType = useCallback(async (type: string) => {
+    const pokemonsByType = await getPokemonListByType(type);
+    const pokemonsList = pokemonsByType.map(({ pokemon }) => pokemon.name);
+
     const pokemonsPromises = await Promise.all(
-      pokemonNames
+      pokemonsList
         .filter((pokemonName) => (pokemons[pokemonName] ? false : true))
         .map((pokemonName) => getPokemonDetails(pokemonName))
     );
@@ -16,9 +22,11 @@ export const useFetchPokemonsPaginated = () => {
       (pokemon): pokemon is PokemonDetails => pokemon !== null
     );
     addPokemons(filteredPokemons);
+
+    return pokemonsList;
   }, [addPokemons, pokemons]);
 
   return {
-    fetchPokemonsPaginated,
+    fetchPokemonsByType,
   };
 };
