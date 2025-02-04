@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { searchPokemon } from "../services/pokemonApi";
+import { getPokemonDetails } from "../services/pokemonApi";
 import { useTheme } from "../context/useTheme";
 import type { PokemonDetails } from "../types/pokemon";
 import BackButton from "../components/BackButton";
@@ -17,7 +17,7 @@ const PokemonDetails = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       if (id) {
-        const details = await searchPokemon(id);
+        const details = await getPokemonDetails(id);
         if (details) {
           const price = parseFloat(calculateFinalPrice(details.stats, details.types).toFixed(2));
           setPokemon({ ...details, price });

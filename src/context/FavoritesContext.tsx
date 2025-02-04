@@ -1,11 +1,11 @@
 import { createContext } from "react";
 
 export const FavoritesContext = createContext<{
-  isFavorite: { [key: string]: boolean };
+  favorites: Record<string, boolean>;
   addToFavorites: (id: string) => void;
   removeFromFavorites: (id: string) => void;
 }>({
-  isFavorite: {},
+  favorites: {},
   addToFavorites: () => {},
   removeFromFavorites: () => {},
 });

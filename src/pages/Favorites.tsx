@@ -2,45 +2,42 @@ import { useContext, useEffect, useState } from "react";
 import BackButton from "../components/BackButton";
 import PokemonCard from "../components/PokemonCard";
 import { useTheme } from "../context/useTheme";
-import { searchPokemon } from "../services/pokemonApi";
-import { calculateFinalPrice } from "../utils/pricing";
-import { Pokemon } from "../types/pokemon";
+import { getPokemonDetails } from "../services/pokemonApi";
 import { FavoritesContext } from "../context/FavoritesContext";
+import { usePokemonContext } from "../context/usePokemonContext";
 
-const FavoritePokemonList = () => {
+const Favorites = () => {
   const { theme } = useTheme();
-  const { isFavorite } = useContext(FavoritesContext);
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-
-  const favoriteIds = Object.keys(isFavorite).filter((id) => isFavorite[id]);
+  const { favorites } = useContext(FavoritesContext);
+  const { pokemons, addPokemon } = usePokemonContext();
+  const [loading, setLoading] = useState(true);
+  const pokemonList = Object.keys(favorites).map(
+    (pokemonName) => pokemons[pokemonName]
+  );
 
   useEffect(() => {
     const fetchFavoritePokemon = async () => {
-      const favoritePokemonDetails = await Promise.all(
-        favoriteIds.map(async (id) => {
-          const details = await searchPokemon(id);
-          if (details) {
-            const price = parseFloat(calculateFinalPrice(details.stats, details.types).toFixed(2));
-            return { ...details, price };
-          } else {
-            console.error("Incomplete Pokemon details:", details);
-            return null;
+      const promises = await Promise.all(
+        Object.keys(favorites).map(async (pokemonName) => {
+          if (pokemons[pokemonName]) {
+            return true;
+          }
+
+          const pokemon = await getPokemonDetails(pokemonName);
+
+          if (pokemon) {
+            addPokemon(pokemon);
           }
         })
       );
-      setPokemonList(
-        favoritePokemonDetails.filter(
-          (pokemon) => pokemon !== null
-        ) as Pokemon[]
-      );
+      setLoading(false);
+      console.log("🚀 ~ fetchFavoritePokemon ~ promises:", promises);
     };
 
-    if (favoriteIds.length > 0) {
-      fetchFavoritePokemon();
-    } else {
-      setPokemonList([]);
-    }
-  }, [favoriteIds]);
+    fetchFavoritePokemon();
+  }, [favorites, addPokemon, pokemons]);
+
+  if (loading) return <div>loading</div>;
 
   return (
     <div
@@ -69,4 +66,4 @@ const FavoritePokemonList = () => {
   );
 };
 
-export default FavoritePokemonList;
+export default Favorites;

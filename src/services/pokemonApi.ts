@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Pokemon, PokemonDetails } from "../types/pokemon";
+import { calculateFinalPrice } from "../utils/pricing";
 
 const API_URL = "https://pokeapi.co/api/v2";
 
@@ -18,14 +19,18 @@ export const getPokemonList = async (
   }
 };
 
-export const searchPokemon = async (
+export const getPokemonDetails = async (
   name: string
 ): Promise<PokemonDetails | null> => {
   try {
     const response = await axios.get(
       `${API_URL}/pokemon/${name.toLowerCase()}`
     );
-    return response.data as PokemonDetails;
+    const pokemonDetails = response.data as PokemonDetails;
+    const price = parseFloat(
+      calculateFinalPrice(pokemonDetails.stats, pokemonDetails.types).toFixed(2)
+    );
+    return { ...pokemonDetails, price }
   } catch (error) {
     console.error("Error fetching Pokémon:", error);
     return null;

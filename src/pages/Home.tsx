@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getPokemonList,
   getPokemonTypes,
-  searchPokemon,
+  getPokemonDetails,
 } from "../services/pokemonApi";
 import { usePokemonContext } from "../context/usePokemonContext";
 import { useTheme } from "../context/useTheme";
@@ -96,7 +96,7 @@ const Home = () => {
       const list = await getPokemonList(ITEMS_PER_PAGE, offset);
       setPokemonList(list);
     } else {
-      const pokemon = await searchPokemon(search);
+      const pokemon = await getPokemonDetails(search);
       if (pokemon) {
         setPokemonList([pokemon]);
       } else {

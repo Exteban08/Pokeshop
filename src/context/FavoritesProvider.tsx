@@ -1,45 +1,42 @@
 import { useState, useEffect, ReactNode, useCallback } from "react";
 import { FavoritesContext } from "./FavoritesContext";
+import { localStorageKey } from "../utils/storage";
 
 export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
-  const [isFavorite, setIsFavorites] = useState<{ [key: string]: boolean }>(
-    () => {
-      try {
-        const storedFavorites = localStorage.getItem("favorites");
-        return storedFavorites ? JSON.parse(storedFavorites) : {};
-      } catch (error) {
-        console.error("Error reading from localStorage", error);
-        return {};
-      }
-    }
-  );
+  const [favorites, setFavorites] = useState<Record<string, boolean>>(() => {
+    const storedFavorites = localStorage.getItem(localStorageKey.favorites);
+    return storedFavorites ? JSON.parse(storedFavorites) : {};
+  });
 
   useEffect(() => {
-    try {
-      localStorage.setItem("favorites", JSON.stringify(isFavorite));
-    } catch (error) {
-      console.error("Error writing to localStorage", error);
-    }
-  }, [isFavorite]);
+    localStorage.setItem(localStorageKey.favorites, JSON.stringify(favorites));
+  }, [favorites]);
 
-  const addToFavorites = useCallback((id: string) => {
-    setIsFavorites((prevFavorites) => ({
-      ...prevFavorites,
-      [id]: true,
-    }));
-  }, []);
+  const addToFavorites = useCallback(
+    (pokemonName: string) => {
+      if (favorites[pokemonName]) {
+        return;
+      }
 
-  const removeFromFavorites = useCallback((id: string) => {
-    setIsFavorites((prevFavorites) => {
-      const newFavorites = { ...prevFavorites };
-      delete newFavorites[id];
+      setFavorites((prevFavorites) => ({
+        ...prevFavorites,
+        [pokemonName]: true,
+      }));
+    },
+    [favorites]
+  );
+
+  const removeFromFavorites = useCallback((pokemonName: string) => {
+    setFavorites((prevFavorites) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [pokemonName]: _, ...newFavorites } = prevFavorites;
       return newFavorites;
     });
   }, []);
 
   return (
     <FavoritesContext.Provider
-      value={{ addToFavorites, removeFromFavorites, isFavorite }}
+      value={{ addToFavorites, removeFromFavorites, favorites }}
     >
       {children}
     </FavoritesContext.Provider>

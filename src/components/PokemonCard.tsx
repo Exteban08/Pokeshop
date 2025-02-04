@@ -1,11 +1,10 @@
-import { useEffect, useState, memo } from "react";
-import { searchPokemon } from "../services/pokemonApi";
-import { Pokemon, PokemonDetails } from "../types/pokemon";
+import { useEffect, memo } from "react";
+import { getPokemonDetails } from "../services/pokemonApi";
+import { Pokemon } from "../types/pokemon";
 import { usePokemonContext } from "../context/usePokemonContext";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdOutlineCatchingPokemon } from "react-icons/md";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
-import { calculateFinalPrice } from "../utils/pricing";
 import { useFavorites } from "../context/useFavorites";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/useTheme";
@@ -21,28 +20,18 @@ interface PokemonCardProps {
 
 const PokemonCard = memo(
   ({ pokemon, toggleCart, isCartOpen }: PokemonCardProps) => {
-    const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+    const { addToFavorites, removeFromFavorites, favorites } = useFavorites();
     const { pokemons, addPokemon } = usePokemonContext();
     const { addToCart } = useCartContext();
     const navigate = useNavigate();
     const { theme } = useTheme();
-    const [pokemonDetails, setPokemonDetails] = useState<
-      PokemonDetails | undefined
-    >(() => {
-      return pokemons[pokemon.name];
-    });
+    const pokemonDetails = pokemons[pokemon.name];
 
     useEffect(() => {
       const fetchDetails = async () => {
-        const details = await searchPokemon(pokemon.name);
-        if (details) {
-          const price = parseFloat(
-            calculateFinalPrice(details.stats, details.types).toFixed(2)
-          );
-          addPokemon({ ...details, price });
-          setPokemonDetails({ ...details, price });
-        } else {
-          console.error("Incomplete Pokemon details:", details);
+        const pokemonDetailsData = await getPokemonDetails(pokemon.name);
+        if (pokemonDetailsData) {
+          addPokemon(pokemonDetailsData);
         }
       };
 
@@ -53,15 +42,15 @@ const PokemonCard = memo(
       fetchDetails();
     }, [pokemon.name, addPokemon, pokemons]);
 
-    if (!pokemonDetails) return <div>Cargando...</div>;
-
     const handleFavoriteClick = () => {
-      if (isFavorite[pokemonDetails.id]) {
-        removeFromFavorites(pokemonDetails.id.toString());
+      if (favorites[pokemonDetails.name]) {
+        removeFromFavorites(pokemonDetails.name);
       } else {
-        addToFavorites(pokemonDetails.id.toString());
+        addToFavorites(pokemonDetails.name);
       }
     };
+
+    if (!pokemonDetails) return <div>Cargando...</div>;
 
     return (
       <div className="w-52 h-60 flex flex-col justify-center items-center border p-4 m-4 rounded-lg">
@@ -80,7 +69,7 @@ const PokemonCard = memo(
           >
             <MdOutlineCatchingPokemon
               className={`text-xl ${
-                isFavorite[pokemonDetails.id]
+                favorites[pokemonDetails.name]
                   ? "text-red-500"
                   : theme === "dark"
                   ? "text-white hover:text-red-500"
