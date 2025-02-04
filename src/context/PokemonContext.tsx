@@ -1,7 +1,9 @@
 import { createContext } from "react";
-import { CartState, Pokemon } from "../types/pokemon";
+import { CartState, Pokemon, PokemonDetails } from "../types/pokemon";
 
 interface PokemonContextType {
+  pokemons: Record<string, PokemonDetails>;
+  addPokemon: (pokemonDetails: PokemonDetails) => void;
   pokemonList: Pokemon[];
   setPokemonList: (list: Pokemon[]) => void;
   currentPage: number;

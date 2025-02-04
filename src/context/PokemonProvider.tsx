@@ -1,6 +1,6 @@
 import { useState, ReactNode, useReducer, useEffect } from "react";
 import { PokemonContext } from "./PokemonContext";
-import { CartState, Pokemon } from "../types/pokemon";
+import { CartState, Pokemon, PokemonDetails } from "../types/pokemon";
 import { cartReducer } from "./cartReducer";
 
 interface PokemonProviderProps {
@@ -18,16 +18,18 @@ interface PokemonProviderProps {
 
 const localStorageKey = {
   cartState: "cartState",
+  pokemons: "pokemons",
 };
 
 export const PokemonProvider = ({ children }: PokemonProviderProps) => {
+  const [pokemons, setPokemons] = useState<Record<string, PokemonDetails>>({});
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cartState, dispatch] = useReducer(cartReducer, initialState, () => {
-    const cartStateData = localStorage.getItem(localStorageKey.cartState)
-    return cartStateData ? JSON.parse(cartStateData)  : initialState
+    const cartStateData = localStorage.getItem(localStorageKey.cartState);
+    return cartStateData ? JSON.parse(cartStateData) : initialState;
   });
 
   const addToCart = (pokemon: Pokemon) => {
@@ -53,6 +55,17 @@ export const PokemonProvider = ({ children }: PokemonProviderProps) => {
     addQuantityToCartElement(pokemon, quantity);
   };
 
+  const addPokemon = (pokemon: PokemonDetails) => {
+    if (pokemons[pokemon.name]) {
+      return;
+    }
+
+    setPokemons((prevPokemons) => ({
+      ...prevPokemons,
+      [pokemon.name]: pokemon,
+    }));
+  };
+
   useEffect(() => {
     localStorage.setItem(localStorageKey.cartState, JSON.stringify(cartState));
   }, [cartState]);
@@ -60,6 +73,8 @@ export const PokemonProvider = ({ children }: PokemonProviderProps) => {
   return (
     <PokemonContext.Provider
       value={{
+        pokemons,
+        addPokemon,
         pokemonList,
         setPokemonList,
         currentPage,

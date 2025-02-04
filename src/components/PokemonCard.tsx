@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { searchPokemon } from "../services/pokemonApi";
 import { Pokemon, PokemonDetails } from "../types/pokemon";
 import { usePokemonContext } from "../context/usePokemonContext";
@@ -18,99 +18,112 @@ interface PokemonCardProps {
   isCartOpen?: boolean;
 }
 
-const PokemonCard = ({ pokemon, toggleCart, isCartOpen }: PokemonCardProps) => {
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
-  const { addToCart } = usePokemonContext();
-  const navigate = useNavigate();
-  const { theme } = useTheme();
-  const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails | null>(
-    null
-  );
+const PokemonCard = memo(
+  ({ pokemon, toggleCart, isCartOpen }: PokemonCardProps) => {
+    const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+    const { addToCart, pokemons, addPokemon } = usePokemonContext();
+    const navigate = useNavigate();
+    const { theme } = useTheme();
+    const [pokemonDetails, setPokemonDetails] = useState<
+      PokemonDetails | undefined
+    >(() => {
+      return pokemons[pokemon.name];
+    });
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      const details = await searchPokemon(pokemon.name);
-      if (details) {
-        const price = parseFloat(calculateFinalPrice(details.stats, details.types).toFixed(2));
-        setPokemonDetails({ ...details, price });
+    useEffect(() => {
+      const fetchDetails = async () => {
+        const details = await searchPokemon(pokemon.name);
+        if (details) {
+          const price = parseFloat(
+            calculateFinalPrice(details.stats, details.types).toFixed(2)
+          );
+          addPokemon({ ...details, price });
+          setPokemonDetails({ ...details, price });
+        } else {
+          console.error("Incomplete Pokemon details:", details);
+        }
+      };
+
+      if (pokemons[pokemon.name]) {
+        return;
+      }
+
+      fetchDetails();
+    }, [pokemon.name, addPokemon, pokemons]);
+
+    if (!pokemonDetails) return <div>Cargando...</div>;
+
+    const handleFavoriteClick = () => {
+      if (isFavorite[pokemonDetails.id]) {
+        removeFromFavorites(pokemonDetails.id.toString());
       } else {
-        console.error("Incomplete Pokemon details:", details);
+        addToFavorites(pokemonDetails.id.toString());
       }
     };
 
-    fetchDetails();
-  }, [pokemon.name]);
-
-  if (!pokemonDetails) return <div>Cargando...</div>;
-
-  const handleFavoriteClick = () => {
-    if (isFavorite[pokemonDetails.id]) {
-      removeFromFavorites(pokemonDetails.id.toString());
-    } else {
-      addToFavorites(pokemonDetails.id.toString());
-    }
-  };
-
-  return (
-    <div className="w-52 h-60 flex flex-col justify-center items-center border p-4 m-4 rounded-lg">
-      <div className="flex items-center justify-between w-full">
-        <span className="w-10 border">{pokemonDetails.id}</span>
-        <h2 className="w-full flex-grow text-center">{pokemonDetails.name}</h2>
-        <Button
-          className={`${
-            theme === "dark"
-              ? "bg-gray-900 hover:bg-gray-900"
-              : " bg-white hover:bg-white"
-          } rounded-full`}
-          onClick={handleFavoriteClick}
-        >
-          <MdOutlineCatchingPokemon
-            className={`text-xl ${
-              isFavorite[pokemonDetails.id]
-                ? "text-red-500"
-                : theme === "dark"
-                ? "text-white hover:text-red-500"
-                : "text-black hover:text-red-500"
-            }`}
-          />
-        </Button>
-      </div>
-      <img
-        src={pokemonDetails.sprites.front_default}
-        alt={pokemonDetails.name}
-        className="w-24 h-24 object-contain"
-      />
-      <div className="flex gap-2 mt-2">
-        {pokemonDetails.types.map((type) => (
-          <TypeChip key={type.type.name} type={type.type.name} />
-        ))}
-      </div>
-      <p className="text-gray-600 dark:text-gray-400">
-        {`Precio: $${pokemonDetails.price}`}
-      </p>
-      <div className="w-full flex justify-between">
-        <Button
-          className="w-10 h-8 flex justify-center items-center"
-          onClick={() => navigate(`/pokemon/${pokemonDetails.id}`)}
-        >
-          <HiOutlineInformationCircle className="w-5 h-5" />
-        </Button>
-        {toggleCart && isCartOpen !== undefined && (
+    return (
+      <div className="w-52 h-60 flex flex-col justify-center items-center border p-4 m-4 rounded-lg">
+        <div className="flex items-center justify-between w-full">
+          <span className="w-10 border">{pokemonDetails.id}</span>
+          <h2 className="w-full flex-grow text-center">
+            {pokemonDetails.name}
+          </h2>
           <Button
-            onClick={() => {
-              addToCart(pokemonDetails);
-              if (!isCartOpen) {
-                toggleCart();
-              }
-            }}
-            className="w-10 h-8"
+            className={`${
+              theme === "dark"
+                ? "bg-gray-900 hover:bg-gray-900"
+                : " bg-white hover:bg-white"
+            } rounded-full`}
+            onClick={handleFavoriteClick}
           >
-            <FaShoppingCart />
+            <MdOutlineCatchingPokemon
+              className={`text-xl ${
+                isFavorite[pokemonDetails.id]
+                  ? "text-red-500"
+                  : theme === "dark"
+                  ? "text-white hover:text-red-500"
+                  : "text-black hover:text-red-500"
+              }`}
+            />
           </Button>
-        )}
+        </div>
+        <img
+          src={pokemonDetails.sprites.front_default}
+          alt={pokemonDetails.name}
+          className="w-24 h-24 object-contain"
+        />
+        <div className="flex gap-2 mt-2">
+          {pokemonDetails.types.map((type) => (
+            <TypeChip key={type.type.name} type={type.type.name} />
+          ))}
+        </div>
+        <p className="text-gray-600 dark:text-gray-400">
+          {`Precio: $${pokemonDetails.price}`}
+        </p>
+        <div className="w-full flex justify-between">
+          <Button
+            className="w-10 h-8 flex justify-center items-center"
+            onClick={() => navigate(`/pokemon/${pokemonDetails.id}`)}
+          >
+            <HiOutlineInformationCircle className="w-5 h-5" />
+          </Button>
+          {toggleCart && isCartOpen !== undefined && (
+            <Button
+              onClick={() => {
+                addToCart(pokemonDetails);
+                if (!isCartOpen) {
+                  toggleCart();
+                }
+              }}
+              className="w-10 h-8"
+            >
+              <FaShoppingCart />
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default PokemonCard;

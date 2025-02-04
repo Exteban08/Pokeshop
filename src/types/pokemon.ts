@@ -1,8 +1,6 @@
 export interface Pokemon {
-  id: number;
   name: string;
-  price: number;
-  url?: string;
+  url: string;
 }
 
 interface PokemonStat {
