@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {
-  getPokemonList,
   getPokemonTypes,
   getPokemonDetails,
   getPokemonListByType,
+  getPokemonList,
 } from "../services/pokemonApi";
 import { usePokemonContext } from "../context/usePokemonContext";
 import { useTheme } from "../context/useTheme";
@@ -20,6 +20,7 @@ import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import FilterInput from "../components/FilterInput";
 import { useCartContext } from "../context/useCartContext";
+import { useFetchPokemonPaginated } from "../hooks/useFetchPokemonsPaginated";
 
 const Home = () => {
   const { theme, toggleTheme } = useTheme();
@@ -29,9 +30,10 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { pokemons, addPokemon, addPokemons } = usePokemonContext();
   const [pokemonNames, setPokemonNames] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const { pokemons, addPokemon, addPokemons } = usePokemonContext();
+  const { fetchPokemonsPaginated } = useFetchPokemonPaginated({ pokemonNames });
   const renderPokemons = pokemonNames
     .map((pokemonName) => pokemons[pokemonName])
     .filter(Boolean);
@@ -51,38 +53,23 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchPokemons = async () => {
+    const fetchPokemonList = async () => {
+      const pokemonList = await getPokemonList(currentPage);
+      setPokemonNames(pokemonList.map(({ name }) => name));
+    };
+
+    fetchPokemonList();
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!selectedType && !search) {
       setIsLoading(true);
       setError(null);
 
-      const pokemonList = await getPokemonList(currentPage);
-      setPokemonNames(pokemonList.map(({ name }) => name));
-      const pokemonsPromises = await Promise.all(
-        pokemonList
-          .filter(({ name }) => (pokemons[name] ? false : true))
-          .map(({ name }) => {
-            return getPokemonDetails(name);
-          })
-      );
-      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
-        (pokemon): pokemon is PokemonDetails => pokemon !== null
-      );
-      addPokemons(filteredPokemons);
+      fetchPokemonsPaginated();
       setIsLoading(false);
-    };
-
-    if (!selectedType && !search) {
-      fetchPokemons();
     }
-  }, [
-    currentPage,
-    setError,
-    setIsLoading,
-    addPokemons,
-    pokemons,
-    selectedType,
-    search,
-  ]);
+  }, [fetchPokemonsPaginated, search, selectedType]);
 
   useEffect(() => {
     if (!selectedType) {
