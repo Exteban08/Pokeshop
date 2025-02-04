@@ -6,19 +6,22 @@ import FavoritePokemonList from "./pages/FavoritePokemonList";
 import PokemonDetails from "./pages/PokemonDetails";
 import Home from "./pages/Home";
 import "./App.css";
+import { CartProvider } from "./context/CartProvider";
 
 const App = () => {
   return (
     <ThemeProvider>
       <FavoritesProvider>
         <PokemonProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/favorites" element={<FavoritePokemonList />} />
-              <Route path="/pokemon/:id" element={<PokemonDetails />} />
-            </Routes>
-          </Router>
+          <CartProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/favorites" element={<FavoritePokemonList />} />
+                <Route path="/pokemon/:id" element={<PokemonDetails />} />
+              </Routes>
+            </Router>
+          </CartProvider>
         </PokemonProvider>
       </FavoritesProvider>
     </ThemeProvider>

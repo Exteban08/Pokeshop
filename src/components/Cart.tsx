@@ -1,32 +1,11 @@
-import { usePokemonContext } from "../context/usePokemonContext";
 import { useTheme } from "../context/useTheme";
 import { MdDelete } from "react-icons/md";
 import Button from "./Button";
-import { Pokemon } from "../types/pokemon";
+import { useCartContext } from "../context/useCartContext";
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart, updateQuantity } =
-    usePokemonContext();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCartContext();
   const { theme } = useTheme();
-
-  const handleQuantityChange = (pokemonId: number, quantity: number) => {
-    const element = cart.items.find((item) => item.pokemon.id === pokemonId);
-
-    if (!element) {
-      console.error("Item not found in cart");
-      return;
-    }
-
-    const newQuantity = Math.max(1, quantity);
-
-    const pokemon: Pokemon = {
-      id: element.pokemon.id,
-      name: element.pokemon.name,
-      price: element.pokemon.price,
-    };
-
-    updateQuantity(pokemon, newQuantity);
-  };
 
   return (
     <div
@@ -35,17 +14,17 @@ const Cart = () => {
       }`}
     >
       <h2 className="text-xl font-bold mb-4">Carrito</h2>
-      {cart.items.length === 0 ? (
+      {Object.values(cart.items).length === 0 ? (
         <p>El carrito está vacío.</p>
       ) : (
         <>
           <ul>
-            {cart.items.map((item) => (
-              <li key={item.pokemon.id} className="mb-2">
+            {Object.values(cart.items).map((item) => (
+              <li key={item.pokemonName} className="mb-2">
                 <div className="flex justify-between items-center">
                   <span>
-                    {item.pokemon.name} - $
-                    {(item.pokemon.price * item.quantity).toFixed(2)}
+                    {item.pokemonName} $
+                    {(item.price * item.quantity).toFixed(2)}
                   </span>
                   <div className="flex gap-2">
                     <input
@@ -53,18 +32,13 @@ const Cart = () => {
                       value={item.quantity}
                       min="1"
                       onChange={(e) => {
-                        const newQuantity = Number(e.target.value);
-                    
-                        if (newQuantity >= 1) {
-                          handleQuantityChange(item.pokemon.id, newQuantity);
-                        } else {
-                          e.target.value = item.quantity.toString();
-                        }
+                        const newQuantity = Math.max(1, Number(e.target.value));
+                        updateQuantity({ pokemonName: item.pokemonName, quantity: newQuantity });
                       }}
                       className="w-14 border rounded-lg"
                     />
                     <Button
-                      onClick={() => removeFromCart(item.pokemon.id)}
+                      onClick={() => removeFromCart(item.pokemonName)}
                       className="bg-gray-500 w-8 h-8"
                     >
                       <MdDelete />

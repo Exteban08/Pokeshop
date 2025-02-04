@@ -19,12 +19,12 @@ import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import FilterInput from "../components/FilterInput";
 import axios from "axios";
+import { useCartContext } from "../context/useCartContext";
 
 const ITEMS_PER_PAGE = 20;
 const API_URL = "https://pokeapi.co/api/v2";
 
 const Home = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [types, setTypes] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
@@ -39,6 +39,7 @@ const Home = () => {
     error,
     setError,
   } = usePokemonContext();
+  const { isCartOpen, setIsCartOpen } = useCartContext();
 
   useEffect(() => {
     if (!selectedType) {

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/useTheme";
 import Button from "./Button";
 import TypeChip from "./TypeChip";
+import { useCartContext } from "../context/useCartContext";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
@@ -21,7 +22,8 @@ interface PokemonCardProps {
 const PokemonCard = memo(
   ({ pokemon, toggleCart, isCartOpen }: PokemonCardProps) => {
     const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
-    const { addToCart, pokemons, addPokemon } = usePokemonContext();
+    const { pokemons, addPokemon } = usePokemonContext();
+    const { addToCart } = useCartContext();
     const navigate = useNavigate();
     const { theme } = useTheme();
     const [pokemonDetails, setPokemonDetails] = useState<
@@ -110,7 +112,7 @@ const PokemonCard = memo(
           {toggleCart && isCartOpen !== undefined && (
             <Button
               onClick={() => {
-                addToCart(pokemonDetails);
+                addToCart({ pokemonName: pokemonDetails.name, price: pokemonDetails.price });
                 if (!isCartOpen) {
                   toggleCart();
                 }
