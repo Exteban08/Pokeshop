@@ -17,7 +17,7 @@ const Favorites = () => {
 
   useEffect(() => {
     const fetchFavoritePokemon = async () => {
-      const promises = await Promise.all(
+      await Promise.all(
         Object.keys(favorites).map(async (pokemonName) => {
           if (pokemons[pokemonName]) {
             return true;
@@ -31,7 +31,6 @@ const Favorites = () => {
         })
       );
       setLoading(false);
-      console.log("🚀 ~ fetchFavoritePokemon ~ promises:", promises);
     };
 
     fetchFavoritePokemon();

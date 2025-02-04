@@ -45,9 +45,11 @@ const Home = () => {
       const pokemonList = await getPokemonList(currentPage);
       setPokemonNames(pokemonList.map(({ name }) => name));
       const pokemonsPromises = await Promise.all(
-        pokemonList.map(({ name }) => {
-          return getPokemonDetails(name);
-        })
+        pokemonList
+          .filter(({ name }) => pokemons[name] ? false : true)
+          .map(({ name }) => {
+            return getPokemonDetails(name);
+          })
       );
       const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
         (pokemon): pokemon is PokemonDetails => pokemon !== null
@@ -57,14 +59,23 @@ const Home = () => {
     };
 
     if (!selectedType) {
-      setCurrentPage(1);
       fetchPokemons();
     }
-  }, [currentPage, setError, setIsLoading, addPokemons, selectedType]);
+  }, [
+    currentPage,
+    setError,
+    setIsLoading,
+    addPokemons,
+    pokemons,
+    selectedType,
+  ]);
 
   useEffect(() => {
     const filterPokemon = async () => {
-      if (!selectedType) return;
+      if (!selectedType) {
+        setCurrentPage(1);
+        return;
+      }
       setIsLoading(true);
       setError(null);
 
