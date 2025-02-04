@@ -29,87 +29,14 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { pokemons, addPokemons } = usePokemonContext();
+  const { pokemons, addPokemon, addPokemons } = usePokemonContext();
   const [pokemonNames, setPokemonNames] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
   const renderPokemons = pokemonNames
     .map((pokemonName) => pokemons[pokemonName])
     .filter(Boolean);
 
   const { isCartOpen, setIsCartOpen } = useCartContext();
-
-  useEffect(() => {
-    const fetchPokemons = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      const pokemonList = await getPokemonList(currentPage);
-      setPokemonNames(pokemonList.map(({ name }) => name));
-      const pokemonsPromises = await Promise.all(
-        pokemonList
-          .filter(({ name }) => pokemons[name] ? false : true)
-          .map(({ name }) => {
-            return getPokemonDetails(name);
-          })
-      );
-      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
-        (pokemon): pokemon is PokemonDetails => pokemon !== null
-      );
-      addPokemons(filteredPokemons);
-      setIsLoading(false);
-    };
-
-    if (!selectedType) {
-      fetchPokemons();
-    }
-  }, [
-    currentPage,
-    setError,
-    setIsLoading,
-    addPokemons,
-    pokemons,
-    selectedType,
-  ]);
-
-  useEffect(() => {
-    const filterPokemon = async () => {
-      if (!selectedType) {
-        setCurrentPage(1);
-        return;
-      }
-      setIsLoading(true);
-      setError(null);
-
-      const pokemonList = await getPokemonListByType(selectedType);
-      setPokemonNames(pokemonList.map(({ pokemon }) => pokemon.name));
-      const pokemonsPromises = await Promise.all(
-        pokemonList.map(({ pokemon }) => {
-          return getPokemonDetails(pokemon.name);
-        })
-      );
-      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
-        (pokemon): pokemon is PokemonDetails => pokemon !== null
-      );
-      addPokemons(filteredPokemons);
-      setIsLoading(false);
-    };
-
-    filterPokemon();
-  }, [selectedType, addPokemons]);
-
-  const handleSearch = async (search: string) => {
-    /* if (search === "") {
-      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-      const list = await getPokemonList(ITEMS_PER_PAGE, offset);
-      setPokemonList(list);
-    } else {
-      const pokemon = await getPokemonDetails(search);
-      if (pokemon) {
-        setPokemonList([pokemon]);
-      } else {
-        console.error("Pokemon not found");
-      }
-    } */
-  };
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -122,6 +49,88 @@ const Home = () => {
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
+
+  useEffect(() => {
+    const fetchPokemons = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      const pokemonList = await getPokemonList(currentPage);
+      setPokemonNames(pokemonList.map(({ name }) => name));
+      const pokemonsPromises = await Promise.all(
+        pokemonList
+          .filter(({ name }) => (pokemons[name] ? false : true))
+          .map(({ name }) => {
+            return getPokemonDetails(name);
+          })
+      );
+      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+        (pokemon): pokemon is PokemonDetails => pokemon !== null
+      );
+      addPokemons(filteredPokemons);
+      setIsLoading(false);
+    };
+
+    if (!selectedType && !search) {
+      fetchPokemons();
+    }
+  }, [
+    currentPage,
+    setError,
+    setIsLoading,
+    addPokemons,
+    pokemons,
+    selectedType,
+    search,
+  ]);
+
+  useEffect(() => {
+    if (!selectedType) {
+      setCurrentPage(1);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSearch("");
+
+    const filterPokemon = async () => {
+      const pokemonList = await getPokemonListByType(selectedType);
+      setPokemonNames(pokemonList.map(({ pokemon }) => pokemon.name));
+      const pokemonsPromises = await Promise.all(
+        pokemonList.map(({ pokemon }) => {
+          return getPokemonDetails(pokemon.name);
+        })
+      );
+      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+        (pokemon): pokemon is PokemonDetails => pokemon !== null
+      );
+      addPokemons(filteredPokemons);
+    };
+
+    filterPokemon();
+    setIsLoading(false);
+  }, [selectedType, addPokemons]);
+
+  useEffect(() => {
+    if (!search) return;
+
+    setIsLoading(true);
+    setError(null);
+    setSelectedType(null);
+
+    const fetchPokemon = async () => {
+      const pokemon = await getPokemonDetails(search);
+
+      if (pokemon) {
+        setPokemonNames([pokemon.name]);
+        addPokemon(pokemon);
+      }
+    };
+
+    fetchPokemon();
+    setIsLoading(false);
+  }, [addPokemon, search, selectedType]);
 
   useEffect(() => {
     const fetchTypes = async () => {
@@ -169,7 +178,7 @@ const Home = () => {
           onSelectType={setSelectedType}
           theme={theme}
         />
-        <SearchBar onSearch={handleSearch} theme={theme} />
+        <SearchBar search={search} onSearch={setSearch} theme={theme} />
       </div>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {renderPokemons.map((pokemonDetails) => {
