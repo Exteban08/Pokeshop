@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import BackButton from "../components/BackButton";
+import HomeButton from "../components/HomeButton";
 import PokemonCard from "../components/PokemonCard";
 import { useTheme } from "../context/useTheme";
 import { getPokemonDetails } from "../services/pokemonApi";
@@ -45,7 +45,7 @@ const Favorites = () => {
       }`}
     >
       <div className="w-full flex justify-start p-4">
-        <BackButton />
+        <HomeButton />
       </div>
       <div className="w-full flex justify-center text-center mb-8">
         <h1 className="text-4xl font-bold capitalize mb-2">Favoritos</h1>

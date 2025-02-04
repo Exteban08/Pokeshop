@@ -38,7 +38,6 @@ const PokemonCard = ({
   return (
     <div className="w-52 h-60 flex flex-col justify-center items-center border p-4 m-4 rounded-lg">
       <div className="flex items-center justify-between w-full">
-        <span className="w-10 border">{pokemonDetails.id}</span>
         <h2 className="w-full flex-grow text-center">{pokemonDetails.name}</h2>
         <Button
           className={`${
@@ -49,7 +48,7 @@ const PokemonCard = ({
           onClick={handleFavoriteClick}
         >
           <MdOutlineCatchingPokemon
-            className={`text-xl ${
+            className={`text-2xl ${
               favorites[pokemonDetails.name]
                 ? "text-red-500"
                 : theme === "dark"
