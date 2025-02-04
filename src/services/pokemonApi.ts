@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Pokemon, PokemonDetails } from "../types/pokemon";
+import { Pokemon, PokemonDetails, PokemonTypeList } from "../types/pokemon";
 import { calculateFinalPrice } from "../utils/pricing";
 
 const ITEMS_PER_PAGE = 20;
@@ -8,18 +8,27 @@ const API_URL = "https://pokeapi.co/api/v2";
 export const getPokemonList = async (
   page: number
 ): Promise<Pokemon[]> => {
-  const offset = (page - 1) * ITEMS_PER_PAGE;
   try {
+    const offset = (page - 1) * ITEMS_PER_PAGE;
     const response = await axios.get(
       `${API_URL}/pokemon?limit=${ITEMS_PER_PAGE}&offset=${offset}`
     );
-    console.log("🚀 ~ response:", response)
     return response.data.results;
   } catch (error) {
     console.error("Error fetching Pokémon list:", error);
     return [];
   }
 };
+
+export const getPokemonListByType = async (type: string): Promise<PokemonTypeList[]> => {
+  try {
+    const response = await axios.get(`${API_URL}/type/${type}`);
+    return response.data.pokemon
+  } catch (error) {
+    console.error("Error fetching Pokémon list by type:", error);
+    return [];
+  }
+}
 
 export const getPokemonDetails = async (
   name: string

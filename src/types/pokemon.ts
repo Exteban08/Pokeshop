@@ -3,6 +3,10 @@ export interface Pokemon {
   url: string;
 }
 
+export interface PokemonTypeList {
+  pokemon: Pokemon
+}
+
 interface PokemonStat {
   name: string;
 }

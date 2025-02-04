@@ -3,6 +3,7 @@ import {
   getPokemonList,
   getPokemonTypes,
   getPokemonDetails,
+  getPokemonListByType,
 } from "../services/pokemonApi";
 import { usePokemonContext } from "../context/usePokemonContext";
 import { useTheme } from "../context/useTheme";
@@ -28,9 +29,11 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addPokemons } = usePokemonContext()
-  const [pokemons, setPokemons] = useState<PokemonDetails[]>([])
-  console.log("🚀 ~ Home ~ pokemons:", pokemons)
+  const { pokemons, addPokemons } = usePokemonContext();
+  const [pokemonNames, setPokemonNames] = useState<string[]>([]);
+  const renderPokemons = pokemonNames
+    .map((pokemonName) => pokemons[pokemonName])
+    .filter(Boolean);
 
   const { isCartOpen, setIsCartOpen } = useCartContext();
 
@@ -39,91 +42,48 @@ const Home = () => {
       setIsLoading(true);
       setError(null);
 
-      try {
-        const pokemonsList = await getPokemonList(currentPage);
-        const pokemonsPromises = await Promise.all(pokemonsList.map(({ name }) => {
+      const pokemonList = await getPokemonList(currentPage);
+      setPokemonNames(pokemonList.map(({ name }) => name));
+      const pokemonsPromises = await Promise.all(
+        pokemonList.map(({ name }) => {
           return getPokemonDetails(name);
-        }))
-        console.log("🚀 ~ pokemonsPromises ~ pokemonsPromises:", pokemonsPromises)
-        const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
-          (pokemon): pokemon is PokemonDetails => pokemon !== null
-        );
-        console.log("🚀 ~ fetchPokemons ~ filteredPokemons:", filteredPokemons)
-        addPokemons(filteredPokemons)
-        setPokemons(filteredPokemons)
-      } catch (err) {
-        setError("Error al cargar los Pokemon");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+        })
+      );
+      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+        (pokemon): pokemon is PokemonDetails => pokemon !== null
+      );
+      addPokemons(filteredPokemons);
+      setIsLoading(false);
     };
-    fetchPokemons();
-  }, [currentPage, setError, setIsLoading, addPokemons])
 
-  /* useEffect(() => {
     if (!selectedType) {
-      const fetchPokemon = async () => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-          const list = await getPokemonList(currentPage);
-          setPokemonList(list);
-        } catch (err) {
-          setError("Error al cargar los Pokemon");
-          console.error(err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchPokemon();
-    } else {
-      const filterPokemon = async () => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-          const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-          const endIndex = startIndex + ITEMS_PER_PAGE;
-          const response = await axios.get(`${API_URL}/type/${selectedType}`);
-          const pokemonList = response.data.pokemon.map(
-            (entry: { pokemon: PokemonDetails }) => entry.pokemon
-          );
-          setPokemonList(pokemonList.slice(startIndex, endIndex));
-        } catch (err) {
-          setError("Error al cargar los Pokemon filtrados");
-          console.error(err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      filterPokemon();
+      setCurrentPage(1);
+      fetchPokemons();
     }
-  }, [
-    currentPage,
-    selectedType,
-    setPokemonList,
-    setIsLoading,
-    setError,
-    setCurrentPage,
-  ]); */
+  }, [currentPage, setError, setIsLoading, addPokemons, selectedType]);
 
+  useEffect(() => {
+    const filterPokemon = async () => {
+      if (!selectedType) return;
+      setIsLoading(true);
+      setError(null);
 
-  /* useEffect(() => {
-    const fetchDetails = async () => {
-      const pokemonDetailsData = await getPokemonDetails(pokemon.name);
-      if (pokemonDetailsData) {
-        addPokemon(pokemonDetailsData);
-      }
+      const pokemonList = await getPokemonListByType(selectedType);
+      setPokemonNames(pokemonList.map(({ pokemon }) => pokemon.name));
+      const pokemonsPromises = await Promise.all(
+        pokemonList.map(({ pokemon }) => {
+          return getPokemonDetails(pokemon.name);
+        })
+      );
+      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+        (pokemon): pokemon is PokemonDetails => pokemon !== null
+      );
+      addPokemons(filteredPokemons);
+      setIsLoading(false);
     };
 
-    if (pokemons[pokemon.name]) {
-      return;
-    }
-
-    fetchDetails();
-  }, [pokemon.name, addPokemon, pokemons]); */
+    filterPokemon();
+  }, [selectedType, addPokemons]);
 
   const handleSearch = async (search: string) => {
     /* if (search === "") {
@@ -201,7 +161,7 @@ const Home = () => {
         <SearchBar onSearch={handleSearch} theme={theme} />
       </div>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {pokemons.map((pokemonDetails) => {
+        {renderPokemons.map((pokemonDetails) => {
           return (
             <PokemonCard
               key={pokemonDetails.name}
@@ -212,7 +172,7 @@ const Home = () => {
           );
         })}
       </div>
-      {pokemons.length > 1 && (
+      {!selectedType && renderPokemons.length > 1 && (
         <div className="w-full flex gap-4 items-center justify-center pb-4">
           {currentPage !== 1 && (
             <Button onClick={handlePreviousPage} className="w-10 h-8">
