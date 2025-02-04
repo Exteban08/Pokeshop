@@ -1,6 +1,6 @@
-import { useState, ReactNode} from "react";
+import { useState, ReactNode, useCallback } from "react";
 import { PokemonContext } from "./PokemonContext";
-import { Pokemon, PokemonDetails } from "../types/pokemon";
+import { PokemonDetails } from "../types/pokemon";
 
 interface PokemonProviderProps {
   children: ReactNode;
@@ -12,12 +12,8 @@ interface PokemonProviderProps {
 
 export const PokemonProvider = ({ children }: PokemonProviderProps) => {
   const [pokemons, setPokemons] = useState<Record<string, PokemonDetails>>({});
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const addPokemon = (pokemon: PokemonDetails) => {
+  const addPokemon = useCallback((pokemon: PokemonDetails) => {
     if (pokemons[pokemon.name]) {
       return;
     }
@@ -26,21 +22,30 @@ export const PokemonProvider = ({ children }: PokemonProviderProps) => {
       ...prevPokemons,
       [pokemon.name]: pokemon,
     }));
-  };
+  }, [pokemons]);
+
+  const addPokemons = useCallback((pokemonsDetails: PokemonDetails[]) => {
+    setPokemons((prevPokemons) => {
+      const newPokemons = { ...prevPokemons };
+      let hasChanges = false;
+
+      for (const pokemonDetails of pokemonsDetails) {
+        if (!newPokemons[pokemonDetails.name]) {
+          newPokemons[pokemonDetails.name] = pokemonDetails;
+          hasChanges = true;
+        }
+      }
+
+      return hasChanges ? newPokemons : prevPokemons;
+    });
+  }, []);
 
   return (
     <PokemonContext.Provider
       value={{
         pokemons,
         addPokemon,
-        pokemonList,
-        setPokemonList,
-        currentPage,
-        setCurrentPage,
-        isLoading,
-        setIsLoading,
-        error,
-        setError,
+        addPokemons,
       }}
     >
       {children}

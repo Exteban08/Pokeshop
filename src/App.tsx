@@ -11,8 +11,8 @@ import { CartProvider } from "./context/CartProvider";
 const App = () => {
   return (
     <ThemeProvider>
-      <FavoritesProvider>
-        <PokemonProvider>
+      <PokemonProvider>
+        <FavoritesProvider>
           <CartProvider>
             <Router>
               <Routes>
@@ -22,8 +22,8 @@ const App = () => {
               </Routes>
             </Router>
           </CartProvider>
-        </PokemonProvider>
-      </FavoritesProvider>
+        </FavoritesProvider>
+      </PokemonProvider>
     </ThemeProvider>
   );
 };

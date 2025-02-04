@@ -59,7 +59,7 @@ const Favorites = () => {
       )}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {pokemonList.map((pokemon) => (
-          <PokemonCard key={pokemon.name} pokemon={pokemon} />
+          <PokemonCard key={pokemon.name} pokemonDetails={pokemon} />
         ))}
       </div>
     </div>

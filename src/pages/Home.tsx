@@ -18,38 +18,57 @@ import Cart from "../components/Cart";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import FilterInput from "../components/FilterInput";
-import axios from "axios";
 import { useCartContext } from "../context/useCartContext";
 
-const ITEMS_PER_PAGE = 20;
-const API_URL = "https://pokeapi.co/api/v2";
-
 const Home = () => {
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [types, setTypes] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const {
-    pokemonList,
-    setPokemonList,
-    currentPage,
-    setCurrentPage,
-    isLoading,
-    setIsLoading,
-    error,
-    setError,
-  } = usePokemonContext();
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [types, setTypes] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { addPokemons } = usePokemonContext()
+  const [pokemons, setPokemons] = useState<PokemonDetails[]>([])
+  console.log("🚀 ~ Home ~ pokemons:", pokemons)
+
   const { isCartOpen, setIsCartOpen } = useCartContext();
 
   useEffect(() => {
+    const fetchPokemons = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const pokemonsList = await getPokemonList(currentPage);
+        const pokemonsPromises = await Promise.all(pokemonsList.map(({ name }) => {
+          return getPokemonDetails(name);
+        }))
+        console.log("🚀 ~ pokemonsPromises ~ pokemonsPromises:", pokemonsPromises)
+        const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+          (pokemon): pokemon is PokemonDetails => pokemon !== null
+        );
+        console.log("🚀 ~ fetchPokemons ~ filteredPokemons:", filteredPokemons)
+        addPokemons(filteredPokemons)
+        setPokemons(filteredPokemons)
+      } catch (err) {
+        setError("Error al cargar los Pokemon");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPokemons();
+  }, [currentPage, setError, setIsLoading, addPokemons])
+
+  /* useEffect(() => {
     if (!selectedType) {
       const fetchPokemon = async () => {
         setIsLoading(true);
         setError(null);
 
         try {
-          const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-          const list = await getPokemonList(ITEMS_PER_PAGE, offset);
+          const list = await getPokemonList(currentPage);
           setPokemonList(list);
         } catch (err) {
           setError("Error al cargar los Pokemon");
@@ -88,10 +107,26 @@ const Home = () => {
     setIsLoading,
     setError,
     setCurrentPage,
-  ]);
+  ]); */
+
+
+  /* useEffect(() => {
+    const fetchDetails = async () => {
+      const pokemonDetailsData = await getPokemonDetails(pokemon.name);
+      if (pokemonDetailsData) {
+        addPokemon(pokemonDetailsData);
+      }
+    };
+
+    if (pokemons[pokemon.name]) {
+      return;
+    }
+
+    fetchDetails();
+  }, [pokemon.name, addPokemon, pokemons]); */
 
   const handleSearch = async (search: string) => {
-    if (search === "") {
+    /* if (search === "") {
       const offset = (currentPage - 1) * ITEMS_PER_PAGE;
       const list = await getPokemonList(ITEMS_PER_PAGE, offset);
       setPokemonList(list);
@@ -102,7 +137,7 @@ const Home = () => {
       } else {
         console.error("Pokemon not found");
       }
-    }
+    } */
   };
 
   const handlePreviousPage = () => {
@@ -166,18 +201,18 @@ const Home = () => {
         <SearchBar onSearch={handleSearch} theme={theme} />
       </div>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {pokemonList.map((pokemon) => {
+        {pokemons.map((pokemonDetails) => {
           return (
             <PokemonCard
-              key={pokemon.name}
-              pokemon={pokemon}
+              key={pokemonDetails.name}
+              pokemonDetails={pokemonDetails}
               toggleCart={toggleCart}
               isCartOpen={isCartOpen}
             />
           );
         })}
       </div>
-      {pokemonList.length > 1 && (
+      {pokemons.length > 1 && (
         <div className="w-full flex gap-4 items-center justify-center pb-4">
           {currentPage !== 1 && (
             <Button onClick={handlePreviousPage} className="w-10 h-8">
