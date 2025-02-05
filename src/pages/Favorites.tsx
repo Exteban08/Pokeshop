@@ -4,10 +4,11 @@ import PokemonCard from '../components/PokemonCard';
 import { getPokemonDetails } from '../services/pokemonApi';
 import { FavoritesContext } from '../context/FavoritesContext';
 import { usePokemonContext } from '../context/usePokemonContext';
+import { PokemonDetails } from '../types/pokemon';
 
 const Favorites = () => {
   const { favorites } = useContext(FavoritesContext);
-  const { pokemons, addPokemon } = usePokemonContext();
+  const { pokemons, addPokemons } = usePokemonContext();
   const [loading, setLoading] = useState(true);
   const pokemonList = Object.keys(favorites).map(
     (pokemonName) => pokemons[pokemonName],
@@ -15,24 +16,21 @@ const Favorites = () => {
 
   useEffect(() => {
     const fetchFavoritePokemon = async () => {
-      await Promise.all(
-        Object.keys(favorites).map(async (pokemonName) => {
-          if (pokemons[pokemonName]) {
-            return true;
-          }
-
-          const pokemon = await getPokemonDetails(pokemonName);
-
-          if (pokemon) {
-            addPokemon(pokemon);
-          }
-        }),
+      setLoading(true);
+      const pokemonsPromises = await Promise.all(
+        Object.keys(favorites)
+          .filter((pokemonName) => (pokemons[pokemonName] ? false : true))
+          .map(async (pokemonName) => getPokemonDetails(pokemonName)),
       );
+      const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
+        (pokemon): pokemon is PokemonDetails => pokemon !== null,
+      );
+      addPokemons(filteredPokemons);
       setLoading(false);
     };
 
     fetchFavoritePokemon();
-  }, [favorites, addPokemon, pokemons]);
+  }, [addPokemons, favorites, pokemons]);
 
   if (loading) return <div>loading</div>;
 
