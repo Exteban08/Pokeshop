@@ -1,72 +1,70 @@
-# Poke-shop
+# Poke-Shop
 
-Poke-Shop es una tienda en línea que permite a los usuarios buscar, ver detalles, guardarlos en favoritos, filtrar por tipos y comprar Pokémon.
+Poke-Shop es una tienda en línea que permite a los usuarios buscar, ver detalles, guardar en favoritos, filtrar por tipos y comprar Pokémon.
 
 ## Tecnologías utilizadas
 
-- **React** para manejo de componentes y construcción de estos.
-- **React Router** para navegación entre páginas.
-- **TypeScript** para manejo de tipos de datos entre componentes y sus estados.
-- **Context API + useReducer** como solución de manejo de estado:
-  Principalemente se optó por esta opción ya que son una herramienta y hook nativos de React y
-  por lo tanto nos evita instalar más dependencias, así como un manejo de estado más dinámico
-  al hacer actualizaciones que dependen del estado anterior.
-- **Tailwind CSS** para diseño de la tienda:
-  Hoy en día es un excelente framework de CSS para diseño de interfaces modernas ya que
-  trabaja de manera rápida y eficiente, así como también ayuda a manteneniendo un código
-  más limpio y reutilizable.
-- **clsx** para manejo de clases Tailwind CSS con condicionales:
-  Esta pequeña librería permite usar una sintaxis más legible de aquellas clases de Tailwind
-  con condiciones.
+- **React** para la construcción y manejo de componentes.
+- **React Router** para la navegación entre páginas.
+- **TypeScript** para el tipado seguro y la gestión de estados en los componentes.
+- **Context API + useReducer** para la gestión del estado global:
+  - Se optó por esta solución debido a que son herramientas nativas de React, evitando la instalación de dependencias adicionales.
+  - Facilita un manejo de estado eficiente, especialmente en actualizaciones dependientes del estado anterior.
+- **Tailwind CSS** para el diseño de la interfaz:
+  - Un framework moderno que permite un desarrollo rápido y eficiente.
+  - Facilita la escritura de código limpio y reutilizable.
+- **clsx** para la gestión de clases de Tailwind CSS con condicionales:
+  - Permite una sintaxis más legible para el manejo dinámico de clases.
 - **Vite** como servidor de desarrollo:
-  Vite es una herramienta diseñada para ser rápida, eficiente y muy fácil de ejecutar.
-- **Axios** como alternativa para solicitudes HTTP:
-  A diferencia de `fetch`, axios requiere menos configuración para hacer solicitudes y las
-  maneja de manera más sencilla y eficiente.
-  Se basa principalmente en `Promises` lo que ayuda a manejar respuestas asíncronas con
-  más rapidez.
-- **Vitest** para tests unitarios:
-  Ya que la aplicación se inició con Vite se optó por utilizar este framework por el soporte
-  que tiene con este bundle y con typescript ya que no necesita configuración extra.
-- **Testing Library (React y Jest-DOM)** para tests de componentes y flujos críticos:
-  Estas librerías son bastante compatibles con las tecnologías que estamos utilizando por lo
-  tanto las utilizamos tanto para las pruebas de usuario como para las de componentes.
+  - Diseñado para ser rápido, eficiente y fácil de configurar.
+- **Axios** para solicitudes HTTP:
+  - Requiere menos configuración en comparación con `fetch`.
+  - Manejo sencillo y eficiente de solicitudes asíncronas basado en `Promises`.
+- **Vitest** para pruebas unitarias:
+  - Se eligió por su compatibilidad con Vite y TypeScript sin necesidad de configuración adicional.
+- **Testing Library (React y Jest-DOM)** para pruebas de componentes y flujos críticos:
+  - Compatible con las tecnologías utilizadas, facilitando la automatización de pruebas de usuario y componentes.
+- **Railway** como plataforma de despliegue:
+  - Permite un despliegue rápido y sin configuraciones complejas.
+  - Soporta entornos modernos como Vite y Node.js.
 
-# Instalación y ejecución
+## Instalación y ejecución
 
-## 1. Clona el repositorio
+### 1. Clonar el repositorio
 
-```js
+```sh
 git clone https://github.com/Exteban08/Pokeshop.git
 cd poke-shop
 ```
 
-## 2. Instala las dependencias
+### 2. Instalar dependencias
 
-```js
+```sh
 npm install
 ```
 
-## 3. Inicia el servidor de desarrollo
+### 3. Iniciar el servidor de desarrollo
 
-```js
+```sh
 npm run dev
 ```
 
-Luego, abre '[http://localhost:5173/](http://localhost:5173/)' en tu navegador.
+Abrir [http://localhost:5173/](http://localhost:5173/) en el navegador.
 
-# Pruebas
+## Pruebas
 
-## Ejecuta los test con:
+Para ejecutar las pruebas, utiliza el siguiente comando:
 
-```js
+```sh
 npm run test
 ```
 
-# Próximas mejoras
+## Próximas mejoras
 
-- Búsqueda y filtros avanzados (por tipo, nombre, habilidades, etc.).
-- Paginación para mostrar más Pokémon.
-- Sistema de autenticación e integración de base de datos para no perder datos de usuarios.
+- Implementación de búsqueda y filtros avanzados (por tipo, nombre, habilidades, etc.).
+- Paginación para mejorar la visualización de los Pokémon.
+- Sistema de autenticación e integración de base de datos para almacenar datos de usuarios.
 
-`By Esteban González`
+---
+
+**Autor:** Esteban González
