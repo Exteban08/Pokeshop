@@ -1,9 +1,13 @@
-import { createContext } from "react";
-import { CartState } from "../types/cart";
+import { createContext } from 'react';
+import { CartState } from '../types/cart';
 
 interface CartContextType {
   cart: CartState;
-  addToCart: (payload: { pokemonName: string; price: number }) => void;
+  addToCart: (payload: {
+    pokemonName: string;
+    price: number;
+    pokemonImage: string;
+  }) => void;
   removeFromCart: (pokemonName: string) => void;
   clearCart: () => void;
   updateQuantity: (payload: { pokemonName: string; quantity: number }) => void;
@@ -12,5 +16,5 @@ interface CartContextType {
 }
 
 export const CartContext = createContext<CartContextType | undefined>(
-  undefined
+  undefined,
 );

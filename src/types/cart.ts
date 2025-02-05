@@ -1,7 +1,8 @@
 export interface CartItem {
-  pokemonName: string,
+  pokemonName: string;
   price: number;
   quantity: number;
+  pokemonImage: string;
 }
 
 export interface CartState {

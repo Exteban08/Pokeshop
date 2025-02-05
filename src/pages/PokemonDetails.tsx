@@ -8,6 +8,58 @@ import { calculateFinalPrice } from '../utils/pricing';
 import { FaWeightHanging, FaRulerVertical } from 'react-icons/fa';
 import { GiBroadsword, GiShield, GiSpeedometer } from 'react-icons/gi';
 
+const DetailsSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
+      <div className="flex w-full justify-start p-4">
+        <BackButton />
+      </div>
+      <div className="mx-auto max-w-4xl p-4">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-2 h-10 w-48 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-700"></div>
+          <div className="flex justify-center gap-2">
+            <div className="h-8 w-20 animate-pulse rounded-full bg-gray-300 dark:bg-gray-700"></div>
+          </div>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
+            <div className="h-64 w-full animate-pulse rounded-lg bg-gray-300 dark:bg-gray-700"></div>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="h-12 rounded-lg bg-gray-200 p-3 text-center dark:bg-gray-700"></div>
+              <div className="h-12 rounded-lg bg-gray-200 p-3 text-center dark:bg-gray-700"></div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
+            <div className="mb-4 h-8 w-48 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-700"></div>
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                <div key={index} className="flex items-center">
+                  <div className="h-4 w-4 animate-pulse rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                  <div className="ml-2 h-4 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-700"></div>
+                  <div className="ml-2 h-4 w-12 animate-pulse rounded bg-gray-300 dark:bg-gray-700"></div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 h-18 rounded-lg bg-gray-200 p-4 text-center dark:bg-gray-700"></div>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
+          <div className="mb-4 flex h-8 w-full animate-pulse justify-center rounded-lg">
+            <div className="mb-4 flex h-8 w-44 animate-pulse justify-center rounded-lg bg-gray-300 dark:bg-gray-700"></div>
+          </div>
+          <div className="flex justify-center gap-4">
+            <div className="h-12 w-44 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PokemonDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
@@ -30,7 +82,7 @@ const PokemonDetails = () => {
     fetchDetails();
   }, [id]);
 
-  if (!pokemon) return <div>Cargando...</div>;
+  if (!pokemon) return <DetailsSkeleton />;
 
   const getStatIcon = (statName: string) => {
     switch (statName) {
@@ -109,7 +161,9 @@ const PokemonDetails = () => {
         </div>
 
         <div className="mt-8 rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
-          <h2 className="mb-4 text-2xl font-bold">Habilidades</h2>
+          <h2 className="mb-4 flex w-full justify-center text-2xl font-bold">
+            Habilidades
+          </h2>
           <div className="flex justify-center gap-4">
             {pokemon.abilities.map((ability) => (
               <div

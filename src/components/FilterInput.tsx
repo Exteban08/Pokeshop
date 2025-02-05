@@ -33,7 +33,7 @@ const FilterInput = ({
         onClick={toggleFilterOptions}
         className={clsx(
           'flex items-center gap-2 rounded-lg p-2 hover:backdrop-opacity-90',
-          selectedType && [typeColors[selectedType]],
+          selectedType && [typeColors[selectedType].default],
         )}
       >
         <IoFilter className="text-xl" />
@@ -48,7 +48,7 @@ const FilterInput = ({
                 key={type}
                 onClick={() => handleTypeSelect(type)}
                 className={clsx('rounded-full p-2 text-sm text-white', {
-                  [typeColors[type]]: true,
+                  [typeColors[type].default]: true,
                   'ring-2 ring-black': selectedType === type,
                   'ring-white': selectedType !== type,
                 })}

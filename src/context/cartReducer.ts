@@ -1,13 +1,13 @@
-import { CartState } from "../types/cart";
-import { CartAction } from "./cartActions";
+import { CartState } from '../types/cart';
+import { CartAction } from './cartActions';
 
 export const cartReducer = (
   state: CartState,
-  action: CartAction
+  action: CartAction,
 ): CartState => {
   switch (action.type) {
-    case "ADD_TO_CART": {
-      const { pokemonName, price } = action.payload;
+    case 'ADD_TO_CART': {
+      const { pokemonName, price, pokemonImage } = action.payload;
 
       if (state.items[pokemonName]) {
         return {
@@ -31,13 +31,14 @@ export const cartReducer = (
             pokemonName,
             price,
             quantity: 1,
+            pokemonImage,
           },
         },
         total: state.total + price,
       };
     }
 
-    case "UPDATE_QUANTITY": {
+    case 'UPDATE_QUANTITY': {
       const { pokemonName, quantity } = action.payload;
 
       const items = {
@@ -57,7 +58,7 @@ export const cartReducer = (
       };
     }
 
-    case "REMOVE_FROM_CART": {
+    case 'REMOVE_FROM_CART': {
       const { pokemonName } = action.payload;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,7 +73,7 @@ export const cartReducer = (
       };
     }
 
-    case "CLEAR_CART":
+    case 'CLEAR_CART':
       return {
         items: {},
         total: 0,

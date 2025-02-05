@@ -62,8 +62,10 @@ npm run test
 ## Próximas mejoras
 
 - Implementación de búsqueda y filtros avanzados (por tipo, nombre, habilidades, etc.).
-- Paginación para mejorar la visualización de los Pokémon.
+- Funcionamiento de carrito de compras en toda la aplicación, por ejemplo que desde detalles
+  permita agregar al carrito y este se abra en esa pantalla.
 - Sistema de autenticación e integración de base de datos para almacenar datos de usuarios.
+- Implementación de lógica de checkout, así como sus tests.
 
 ---
 
