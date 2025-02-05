@@ -1,5 +1,5 @@
 export const localStorageKey = {
-  cartState: "cartState",
-  pokemons: "pokemons",
-  favorites: "favorites",
+  cartState: 'cartState',
+  favorites: 'favorites',
+  theme: 'theme',
 };
