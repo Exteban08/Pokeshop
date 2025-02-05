@@ -48,7 +48,7 @@ const Favorites = () => {
           No tienes pokemones en favoritos
         </div>
       )}
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {pokemonList.map((pokemon) => (
           <PokemonCard key={pokemon.name} pokemonDetails={pokemon} />
         ))}

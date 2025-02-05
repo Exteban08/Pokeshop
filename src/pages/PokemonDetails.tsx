@@ -81,7 +81,7 @@ const PokemonDetails = () => {
             </div>
           </div>
 
-          <div className="rounded-xl bg-gray-100 p-6 dark:bg-gray-800">
+          <div className="rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
             <h2 className="mb-4 text-2xl font-bold">Estadísticas</h2>
             <div className="space-y-3">
               {pokemon.stats.map((stat) => (
@@ -108,7 +108,7 @@ const PokemonDetails = () => {
           </div>
         </div>
 
-        <div className="mt-8 rounded-xl bg-gray-100 p-6 dark:bg-gray-800">
+        <div className="mt-8 rounded-xl bg-gray-100 p-6 shadow-xl dark:bg-gray-800">
           <h2 className="mb-4 text-2xl font-bold">Habilidades</h2>
           <div className="flex justify-center gap-4">
             {pokemon.abilities.map((ability) => (

@@ -41,7 +41,7 @@ const FilterInput = ({
       </Button>
 
       {openOptions && (
-        <div className="absolute top-12 right-0 z-10 w-48 rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
+        <div className="absolute top-12 right-0 left-1/2 z-10 w-48 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg sm:right-0 sm:left-auto sm:translate-x-0 dark:bg-gray-800">
           <div className="grid grid-cols-2 gap-2">
             {types.map((type) => (
               <Button

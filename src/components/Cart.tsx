@@ -45,11 +45,11 @@ const Cart = () => {
               </li>
             ))}
           </ul>
-          <div className="mt-10">
+          <div className="mt-10 flex w-full flex-col items-center">
             <p className="font-bold">{`Total: $${cart.total.toFixed(2)}`}</p>
             <Button
               onClick={clearCart}
-              className="mt-2 rounded bg-red-500 p-2 text-white"
+              className="mt-2 w-1/3 rounded bg-red-500 p-2 text-white"
             >
               Vaciar carrito
             </Button>

@@ -122,7 +122,7 @@ const Home = () => {
         <div className="text-6xl">
           <SiPokemon className="text-black dark:text-white" />
         </div>
-        <div>
+        <div className="hidden sm:block">
           <h1 className="text-2xl font-bold">Poke-shop</h1>
         </div>
         <div className="flex gap-2">
@@ -145,7 +145,7 @@ const Home = () => {
         />
         <SearchBar search={search} onSearch={setSearch} />
       </div>
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid w-full grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {renderPokemons.map((pokemonDetails) => {
           return (
             <PokemonCard
