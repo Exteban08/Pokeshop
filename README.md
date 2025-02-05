@@ -6,7 +6,7 @@ Poke-Shop es una tienda en línea que permite a los usuarios buscar, ver detalle
 
 - **React** para la construcción y manejo de componentes.
 - **React Router** para la navegación entre páginas.
-- **TypeScript** para el tipado seguro y la gestión de estados en los componentes.
+- **TypeScript** para el tipado seguro y la experiencia de desarrollo
 - **Context API + useReducer** para la gestión del estado global:
   - Se optó por esta solución debido a que son herramientas nativas de React, evitando la instalación de dependencias adicionales.
   - Facilita un manejo de estado eficiente, especialmente en actualizaciones dependientes del estado anterior.
@@ -29,6 +29,10 @@ Poke-Shop es una tienda en línea que permite a los usuarios buscar, ver detalle
   - Soporta entornos modernos como Vite y Node.js.
 
 ## Instalación y ejecución
+
+#### Requerimientos
+
+- Versión de Nodejs >= 20
 
 ### 1. Clonar el repositorio
 

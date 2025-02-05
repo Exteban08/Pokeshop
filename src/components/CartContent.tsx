@@ -22,7 +22,7 @@ const CartContent = ({ isCartOpen, toggleCart }: CartContentProps) => {
         },
       )}
     >
-      <div className="flex flex-col bg-white p-6 text-black shadow-2xl dark:bg-gray-800 dark:text-white">
+      <div className="flex flex-col bg-white p-6 text-black dark:bg-gray-800 dark:text-white">
         <Button
           onClick={toggleCart}
           className="absolute top-6 right-6 rounded-full p-2"
