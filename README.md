@@ -1,50 +1,72 @@
-# React + TypeScript + Vite
+# Poke-shop
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Poke-Shop es una tienda en línea que permite a los usuarios buscar, ver detalles, guardarlos en favoritos, filtrar por tipos y comprar Pokémon.
 
-Currently, two official plugins are available:
+## Tecnologías utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React** para manejo de componentes y construcción de estos.
+- **React Router** para navegación entre páginas.
+- **TypeScript** para manejo de tipos de datos entre componentes y sus estados.
+- **Context API + useReducer** como solución de manejo de estado:
+  Principalemente se optó por esta opción ya que son una herramienta y hook nativos de React y
+  por lo tanto nos evita instalar más dependencias, así como un manejo de estado más dinámico
+  al hacer actualizaciones que dependen del estado anterior.
+- **Tailwind CSS** para diseño de la tienda:
+  Hoy en día es un excelente framework de CSS para diseño de interfaces modernas ya que
+  trabaja de manera rápida y eficiente, así como también ayuda a manteneniendo un código
+  más limpio y reutilizable.
+- **clsx** para manejo de clases Tailwind CSS con condicionales:
+  Esta pequeña librería permite usar una sintaxis más legible de aquellas clases de Tailwind
+  con condiciones.
+- **Vite** como servidor de desarrollo:
+  Vite es una herramienta diseñada para ser rápida, eficiente y muy fácil de ejecutar.
+- **Axios** como alternativa para solicitudes HTTP:
+  A diferencia de `fetch`, axios requiere menos configuración para hacer solicitudes y las
+  maneja de manera más sencilla y eficiente.
+  Se basa principalmente en `Promises` lo que ayuda a manejar respuestas asíncronas con
+  más rapidez.
+- **Vitest** para tests unitarios:
+  Ya que la aplicación se inició con Vite se optó por utilizar este framework por el soporte
+  que tiene con este bundle y con typescript ya que no necesita configuración extra.
+- **Testing Library (React y Jest-DOM)** para tests de componentes y flujos críticos:
+  Estas librerías son bastante compatibles con las tecnologías que estamos utilizando por lo
+  tanto las utilizamos tanto para las pruebas de usuario como para las de componentes.
 
-## Expanding the ESLint configuration
+# Instalación y ejecución
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
+## 1. Clona el repositorio
 
 ```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+git clone https://github.com/Exteban08/Pokeshop.git
+cd poke-shop
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## 2. Instala las dependencias
 
 ```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+npm install
 ```
+
+## 3. Inicia el servidor de desarrollo
+
+```js
+npm run dev
+```
+
+Luego, abre '[http://localhost:5173/](http://localhost:5173/)' en tu navegador.
+
+# Pruebas
+
+## Ejecuta los test con:
+
+```js
+npm run test
+```
+
+# Próximas mejoras
+
+- Búsqueda y filtros avanzados (por tipo, nombre, habilidades, etc.).
+- Paginación para mostrar más Pokémon.
+- Sistema de autenticación e integración de base de datos para no perder datos de usuarios.
+
+`By Esteban González`
