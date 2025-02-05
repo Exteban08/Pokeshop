@@ -1,4 +1,4 @@
-import { PokemonStats, PokemonTypes } from "../types/pokemon";
+import { PokemonStats, PokemonTypes } from '../types/pokemon';
 
 export const calculateBasePrice = (stats: PokemonStats[]): number => {
   const basePrice =
@@ -16,7 +16,6 @@ export const calculateBasePrice = (stats: PokemonStats[]): number => {
 };
 
 const multipliers = {
-  legendary: 2.5,
   dragon: 1.8,
   ghost: 1.6,
   psychic: 1.5,
@@ -26,18 +25,18 @@ const multipliers = {
 
 export const applyTypeMultiplier = (
   basePrice: number,
-  types: string[]
+  types: string[],
 ): number => {
-  if (types.includes("dragon")) {
+  if (types.includes('dragon')) {
     return basePrice * multipliers.dragon;
   }
-  if (types.includes("ghost")) {
+  if (types.includes('ghost')) {
     return basePrice * multipliers.ghost;
   }
-  if (types.includes("psychic")) {
+  if (types.includes('psychic')) {
     return basePrice * multipliers.psychic;
   }
-  if (types.includes("normal")) {
+  if (types.includes('normal')) {
     return basePrice * multipliers.normal;
   }
   return basePrice * multipliers.other;
@@ -50,13 +49,13 @@ export const applyTypeDiscount = (price: number, types: string[]): number => {
     grass: 0.12,
   };
 
-  if (types.includes("fire")) {
+  if (types.includes('fire')) {
     return price * (1 - discounts.fire);
   }
-  if (types.includes("water")) {
+  if (types.includes('water')) {
     return price * (1 - discounts.water);
   }
-  if (types.includes("grass")) {
+  if (types.includes('grass')) {
     return price * (1 - discounts.grass);
   }
   return price;
@@ -64,11 +63,11 @@ export const applyTypeDiscount = (price: number, types: string[]): number => {
 
 export const calculateFinalPrice = (
   pokemonStats: PokemonStats[],
-  pokemonTypes: PokemonTypes[]
+  pokemonTypes: PokemonTypes[],
 ): number => {
   const basePrice = calculateBasePrice(pokemonStats);
   const types = pokemonTypes.map(({ type }): string => type.name);
   const priceWithMultiplier = applyTypeMultiplier(basePrice, types);
   const finalPrice = applyTypeDiscount(priceWithMultiplier, types);
-  return finalPrice;
+  return Math.round(finalPrice * 1e2) / 1e2;
 };

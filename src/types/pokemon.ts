@@ -4,7 +4,7 @@ export interface Pokemon {
 }
 
 export interface PokemonTypeList {
-  pokemon: Pokemon
+  pokemon: Pokemon;
 }
 
 interface PokemonStat {
@@ -24,6 +24,18 @@ export interface PokemonTypes {
   type: PokemonType;
 }
 
+interface PokemonSprites {
+  front_default: string;
+}
+
+interface PokemonAbility {
+  name: string;
+}
+
+interface PokemonAbilities {
+  ability: PokemonAbility;
+}
+
 export interface PokemonDetails {
   id: number;
   name: string;
@@ -31,15 +43,8 @@ export interface PokemonDetails {
   price: number;
   weight: number;
   height: number;
-  sprites: {
-    front_default: string;
-  };
+  sprites: PokemonSprites;
   types: PokemonTypes[];
   stats: PokemonStats[];
-  abilities: {
-    ability: {
-      name: string;
-    };
-  }[];
+  abilities: PokemonAbilities[];
 }
-
