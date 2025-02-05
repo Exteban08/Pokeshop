@@ -7,7 +7,7 @@ import clsx from 'clsx';
 interface TypeFilterProps {
   types: string[];
   selectedType: string | null;
-  onSelectType: (type: string | null) => void;
+  onSelectType: (type: string) => Promise<void>;
 }
 
 const FilterInput = ({
@@ -21,9 +21,12 @@ const FilterInput = ({
     setOpenOptions(!openOptions);
   };
 
-  const handleTypeSelect = (type: string) => {
+  const handleTypeSelect = async (type: string) => {
     const newType = selectedType === type ? null : type;
-    onSelectType(newType);
+
+    if (newType) {
+      onSelectType(newType);
+    }
     setOpenOptions(false);
   };
 

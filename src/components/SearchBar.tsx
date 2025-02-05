@@ -5,7 +5,7 @@ const SearchBar = ({
   onSearch,
 }: {
   search: string;
-  onSearch: (search: string) => void;
+  onSearch: (search: string) => Promise<void>;
 }) => {
   const debounced = useDebouncedCallback((value: string) => {
     onSearch(value);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getPokemonTypes, getPokemonDetails } from '../services/pokemonApi';
 import { usePokemonContext } from '../context/usePokemonContext';
 import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
@@ -62,12 +62,6 @@ const Home = () => {
   const { fetchPokemonsByType, isLoading: isFetchPokemonsByTypeLoading } =
     useFetchPokemonsByType();
 
-  const renderPokemons = useMemo(
-    () =>
-      pokemonNames.map((pokemonName) => pokemons[pokemonName]).filter(Boolean),
-    [pokemonNames, pokemons],
-  );
-
   const isLoading =
     isFetchPokemonListLoading ||
     isFetchPokemonsPaginatedLoading ||
@@ -83,6 +77,27 @@ const Home = () => {
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
+  };
+
+  const getPokemonsByType = async (type: string) => {
+    setSearch('');
+    const pokemonNamesByType = await fetchPokemonsByType(type);
+    if (pokemonNamesByType) {
+      setPokemonNames(pokemonNamesByType);
+    }
+    setSelectedType(type);
+  };
+
+  const searcPokemon = async (search: string) => {
+    setSelectedType(null);
+    setSearch(search);
+
+    const pokemon = await getPokemonDetails(search);
+
+    if (pokemon) {
+      addPokemon(pokemon);
+      setPokemonNames([pokemon.name]);
+    }
   };
 
   useEffect(() => {
@@ -106,38 +121,6 @@ const Home = () => {
   ]);
 
   useEffect(() => {
-    if (selectedType) {
-      setSearch('');
-
-      const getPokemonsByType = async () => {
-        const pokemonNamesByType = await fetchPokemonsByType(selectedType);
-        if (pokemonNamesByType) {
-          setPokemonNames(pokemonNamesByType);
-        }
-      };
-
-      getPokemonsByType();
-    }
-  }, [fetchPokemonsByType, selectedType]);
-
-  useEffect(() => {
-    if (search) {
-      setSelectedType(null);
-
-      const fetchPokemon = async () => {
-        const pokemon = await getPokemonDetails(search);
-
-        if (pokemon) {
-          setPokemonNames([pokemon.name]);
-          addPokemon(pokemon);
-        }
-      };
-
-      fetchPokemon();
-    }
-  }, [addPokemon, search]);
-
-  useEffect(() => {
     const fetchTypes = async () => {
       const typesList = await getPokemonTypes();
       const filteredTypes = typesList.slice(0, -2);
@@ -146,7 +129,7 @@ const Home = () => {
     fetchTypes();
   }, []);
 
-  if (isLoading && renderPokemons.length > 0) return <CardSkeleton />;
+  if (isLoading) return <CardSkeleton />;
 
   return (
     <div className="min-h-screen w-full bg-white text-black dark:bg-gray-900 dark:text-white">
@@ -155,12 +138,13 @@ const Home = () => {
         <FilterInput
           types={types}
           selectedType={selectedType}
-          onSelectType={setSelectedType}
+          onSelectType={getPokemonsByType}
         />
-        <SearchBar search={search} onSearch={setSearch} />
+        <SearchBar search={search} onSearch={searcPokemon} />
       </div>
       <div className="grid w-full grid-cols-1 justify-items-center gap-10 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {renderPokemons.map((pokemonDetails) => {
+        {pokemonNames.map((pokemonName) => {
+          const pokemonDetails = pokemons[pokemonName];
           return (
             <PokemonCard
               key={pokemonDetails.name}
@@ -171,7 +155,7 @@ const Home = () => {
           );
         })}
       </div>
-      {!selectedType && renderPokemons.length > 1 && (
+      {!selectedType && pokemonNames.length > 1 && (
         <div className="flex w-full items-center justify-center gap-4 pb-4">
           {currentPage !== 1 && (
             <Button onClick={handlePreviousPage} className="h-8 w-10">
