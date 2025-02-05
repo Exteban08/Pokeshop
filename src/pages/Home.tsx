@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  getPokemonTypes,
-  getPokemonDetails,
-  getPokemonList,
-} from '../services/pokemonApi';
+import { getPokemonTypes, getPokemonDetails } from '../services/pokemonApi';
 import { usePokemonContext } from '../context/usePokemonContext';
 import { GrFormNext, GrFormPrevious } from 'react-icons/gr';
 import PokemonCard from '../components/PokemonCard';
