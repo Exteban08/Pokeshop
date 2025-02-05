@@ -1,13 +1,13 @@
-import { PokemonDetails } from "../types/pokemon";
-import { FaShoppingCart } from "react-icons/fa";
-import { MdOutlineCatchingPokemon } from "react-icons/md";
-import { HiOutlineInformationCircle } from "react-icons/hi2";
-import { useFavorites } from "../context/useFavorites";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/useTheme";
-import Button from "./Button";
-import TypeChip from "./TypeChip";
-import { useCartContext } from "../context/useCartContext";
+import { PokemonDetails } from '../types/pokemon';
+import { FaShoppingCart } from 'react-icons/fa';
+import { MdOutlineCatchingPokemon } from 'react-icons/md';
+import { HiOutlineInformationCircle } from 'react-icons/hi2';
+import { useFavorites } from '../context/useFavorites';
+import { useNavigate } from 'react-router-dom';
+import Button from './Button';
+import TypeChip from './TypeChip';
+import { useCartContext } from '../context/useCartContext';
+import clsx from 'clsx';
 
 interface PokemonCardProps {
   pokemonDetails: PokemonDetails;
@@ -23,7 +23,6 @@ const PokemonCard = ({
   const { addToFavorites, removeFromFavorites, favorites } = useFavorites();
   const { addToCart } = useCartContext();
   const navigate = useNavigate();
-  const { theme } = useTheme();
 
   const handleFavoriteClick = () => {
     if (favorites[pokemonDetails.name]) {
@@ -36,34 +35,28 @@ const PokemonCard = ({
   if (!pokemonDetails) return <div>Cargando...</div>;
 
   return (
-    <div className="w-52 h-60 flex flex-col justify-center items-center border p-4 m-4 rounded-lg">
-      <div className="flex items-center justify-between w-full">
+    <div className="m-4 flex h-60 w-52 flex-col items-center justify-center rounded-lg border p-4">
+      <div className="flex w-full items-center justify-between">
         <h2 className="w-full flex-grow text-center">{pokemonDetails.name}</h2>
         <Button
-          className={`${
-            theme === "dark"
-              ? "bg-gray-900 hover:bg-gray-900"
-              : " bg-white hover:bg-white"
-          } rounded-full`}
+          className="rounded-full bg-white hover:bg-white dark:bg-gray-900 dark:hover:bg-gray-900"
           onClick={handleFavoriteClick}
         >
           <MdOutlineCatchingPokemon
-            className={`text-2xl ${
-              favorites[pokemonDetails.name]
-                ? "text-red-500"
-                : theme === "dark"
-                ? "text-white hover:text-red-500"
-                : "text-black hover:text-red-500"
-            }`}
+            className={clsx({
+              'fill-black text-2xl hover:fill-red-500 dark:bg-gray-900': true,
+              'dark:fill-white': !favorites[pokemonDetails.name],
+              'fill-red-500': favorites[pokemonDetails.name],
+            })}
           />
         </Button>
       </div>
       <img
         src={pokemonDetails.sprites.front_default}
         alt={pokemonDetails.name}
-        className="w-24 h-24 object-contain"
+        className="h-24 w-24 object-contain"
       />
-      <div className="flex gap-2 mt-2">
+      <div className="mt-2 flex gap-2">
         {pokemonDetails.types.map((type) => (
           <TypeChip key={type.type.name} type={type.type.name} />
         ))}
@@ -71,12 +64,12 @@ const PokemonCard = ({
       <p className="text-gray-600 dark:text-gray-400">
         {`Precio: $${pokemonDetails.price}`}
       </p>
-      <div className="w-full flex justify-between">
+      <div className="flex w-full justify-between">
         <Button
-          className="w-10 h-8 flex justify-center items-center"
+          className="flex h-8 w-10 items-center justify-center"
           onClick={() => navigate(`/pokemon/${pokemonDetails.id}`)}
         >
-          <HiOutlineInformationCircle className="w-5 h-5" />
+          <HiOutlineInformationCircle className="h-5 w-5" />
         </Button>
         {toggleCart && isCartOpen !== undefined && (
           <Button
@@ -89,7 +82,7 @@ const PokemonCard = ({
                 toggleCart();
               }
             }}
-            className="w-10 h-8"
+            className="h-8 w-10"
           >
             <FaShoppingCart />
           </Button>

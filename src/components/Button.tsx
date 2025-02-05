@@ -1,5 +1,5 @@
-import React from "react";
-import { useTheme } from "../context/useTheme";
+import React from 'react';
+import clsx from 'clsx';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -7,17 +7,17 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button = ({ children, className, ...props }: ButtonProps) => {
-  const { theme } = useTheme();
-
-  const baseStyles = "flex justify-center items-center rounded-md font-medium transition-colors";
-
-  const themeStyles =
-    theme === "dark"
-      ? "bg-gray-700 text-white hover:bg-gray-600"
-      : "bg-blue-500 text-white hover:bg-blue-600";
-
   return (
-    <button className={`cursor-pointer ${baseStyles} ${themeStyles} ${className}`} {...props}>
+    <button
+      className={clsx(
+        'flex cursor-pointer items-center justify-center rounded-md bg-blue-500 font-medium text-white transition-colors hover:opacity-80',
+        {
+          'dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600': !className,
+        },
+        className,
+      )}
+      {...props}
+    >
       {children}
     </button>
   );

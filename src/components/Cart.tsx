@@ -1,19 +1,13 @@
-import { useTheme } from "../context/useTheme";
-import { MdDelete } from "react-icons/md";
-import Button from "./Button";
-import { useCartContext } from "../context/useCartContext";
+import { MdDelete } from 'react-icons/md';
+import { useCartContext } from '../context/useCartContext';
+import Button from './Button';
 
 const Cart = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCartContext();
-  const { theme } = useTheme();
 
   return (
-    <div
-      className={`p-4 h-full ${
-        theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
-      }`}
-    >
-      <h2 className="text-xl font-bold mb-4">Carrito</h2>
+    <div className="h-full bg-white p-4 text-black dark:bg-gray-800 dark:text-white">
+      <h2 className="mb-4 text-xl font-bold">Carrito</h2>
       {Object.values(cart.items).length === 0 ? (
         <p>El carrito está vacío.</p>
       ) : (
@@ -21,7 +15,7 @@ const Cart = () => {
           <ul>
             {Object.values(cart.items).map((item) => (
               <li key={item.pokemonName} className="mb-2">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span>
                     {item.pokemonName} $
                     {(item.price * item.quantity).toFixed(2)}
@@ -33,13 +27,16 @@ const Cart = () => {
                       min="1"
                       onChange={(e) => {
                         const newQuantity = Math.max(1, Number(e.target.value));
-                        updateQuantity({ pokemonName: item.pokemonName, quantity: newQuantity });
+                        updateQuantity({
+                          pokemonName: item.pokemonName,
+                          quantity: newQuantity,
+                        });
                       }}
-                      className="w-14 border rounded-lg"
+                      className="w-14 rounded-lg border"
                     />
                     <Button
                       onClick={() => removeFromCart(item.pokemonName)}
-                      className="bg-gray-500 w-8 h-8"
+                      className="h-8 w-8 bg-gray-500"
                     >
                       <MdDelete />
                     </Button>
@@ -52,7 +49,7 @@ const Cart = () => {
             <p className="font-bold">{`Total: $${cart.total.toFixed(2)}`}</p>
             <Button
               onClick={clearCart}
-              className="mt-2 p-2 bg-red-500 text-white rounded"
+              className="mt-2 rounded bg-red-500 p-2 text-white"
             >
               Vaciar carrito
             </Button>

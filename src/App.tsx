@@ -5,7 +5,6 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Favorites from "./pages/Favorites";
 import PokemonDetails from "./pages/PokemonDetails";
 import Home from "./pages/Home";
-import "./App.css";
 import { CartProvider } from "./context/CartProvider";
 
 const App = () => {

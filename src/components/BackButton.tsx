@@ -1,24 +1,16 @@
-import { GrFormPrevious } from "react-icons/gr";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/useTheme";
-import Button from "./Button";
+import { GrFormPrevious } from 'react-icons/gr';
+import { useNavigate } from 'react-router-dom';
+import Button from './Button';
 
 const BackButton = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
 
   return (
     <Button
       onClick={() => navigate(-1)}
-      className={`w-10 h-10 ${
-        theme === "dark"
-          ? "bg-gray-900 hover:bg-gray-800"
-          : " bg-white hover:bg-gray-100"
-      } rounded-full`}
+      className="h-10 w-10 rounded-full bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
     >
-      <GrFormPrevious
-        className={`text-2xl ${theme === "dark" ? "text-white" : "text-black"}`}
-      />
+      <GrFormPrevious className="text-2xl text-black dark:text-white" />
     </Button>
   );
 };
