@@ -79,24 +79,29 @@ const Home = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  const getPokemonsByType = async (type: string) => {
+  const getPokemonsByType = async (type: string | null) => {
     setSearch('');
-    const pokemonNamesByType = await fetchPokemonsByType(type);
-    if (pokemonNamesByType) {
-      setPokemonNames(pokemonNamesByType);
-    }
     setSelectedType(type);
+
+    if (type) {
+      const pokemonNamesByType = await fetchPokemonsByType(type);
+      if (pokemonNamesByType) {
+        setPokemonNames(pokemonNamesByType);
+      }
+    }
   };
 
   const searcPokemon = async (search: string) => {
     setSelectedType(null);
     setSearch(search);
 
-    const pokemon = await getPokemonDetails(search);
+    if (search) {
+      const pokemon = await getPokemonDetails(search);
 
-    if (pokemon) {
-      addPokemon(pokemon);
-      setPokemonNames([pokemon.name]);
+      if (pokemon) {
+        addPokemon(pokemon);
+        setPokemonNames([pokemon.name]);
+      }
     }
   };
 

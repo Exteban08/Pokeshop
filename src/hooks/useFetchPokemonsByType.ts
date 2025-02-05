@@ -9,11 +9,16 @@ import { PokemonDetails } from '../types/pokemon';
 export const useFetchPokemonsByType = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
-  const { pokemons, addPokemons } = usePokemonContext();
+  const { pokemons, addPokemons, pokemonTypes, addPokemonType } =
+    usePokemonContext();
 
   const fetchPokemonsByType = useCallback(
     async (type: string) => {
       try {
+        if (pokemonTypes[type]) {
+          return pokemonTypes[type];
+        }
+
         setIsLoading(true);
         const pokemonsByType = await getPokemonListByType(type);
         const pokemonsList = pokemonsByType.map(({ pokemon }) => pokemon.name);
@@ -26,6 +31,7 @@ export const useFetchPokemonsByType = () => {
         const filteredPokemons: PokemonDetails[] = pokemonsPromises.filter(
           (pokemon): pokemon is PokemonDetails => pokemon !== null,
         );
+        addPokemonType(type, pokemonsList);
         addPokemons(filteredPokemons);
 
         return pokemonsList;
@@ -35,7 +41,7 @@ export const useFetchPokemonsByType = () => {
         setIsLoading(false);
       }
     },
-    [addPokemons, pokemons],
+    [addPokemons, pokemons, addPokemonType, pokemonTypes],
   );
 
   return {

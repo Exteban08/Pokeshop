@@ -1,6 +1,6 @@
-import { useState, ReactNode, useCallback } from "react";
-import { PokemonContext } from "./PokemonContext";
-import { PokemonDetails } from "../types/pokemon";
+import { useState, ReactNode, useCallback } from 'react';
+import { PokemonContext } from './PokemonContext';
+import { PokemonDetails } from '../types/pokemon';
 
 interface PokemonProviderProps {
   children: ReactNode;
@@ -12,17 +12,23 @@ interface PokemonProviderProps {
 
 export const PokemonProvider = ({ children }: PokemonProviderProps) => {
   const [pokemons, setPokemons] = useState<Record<string, PokemonDetails>>({});
+  const [pokemonTypes, setPokemonTypes] = useState<Record<string, string[]>>(
+    {},
+  );
 
-  const addPokemon = useCallback((pokemon: PokemonDetails) => {
-    if (pokemons[pokemon.name]) {
-      return;
-    }
+  const addPokemon = useCallback(
+    (pokemon: PokemonDetails) => {
+      if (pokemons[pokemon.name]) {
+        return;
+      }
 
-    setPokemons((prevPokemons) => ({
-      ...prevPokemons,
-      [pokemon.name]: pokemon,
-    }));
-  }, [pokemons]);
+      setPokemons((prevPokemons) => ({
+        ...prevPokemons,
+        [pokemon.name]: pokemon,
+      }));
+    },
+    [pokemons],
+  );
 
   const addPokemons = useCallback((pokemonsDetails: PokemonDetails[]) => {
     setPokemons((prevPokemons) => {
@@ -40,12 +46,28 @@ export const PokemonProvider = ({ children }: PokemonProviderProps) => {
     });
   }, []);
 
+  const addPokemonType = useCallback(
+    (type: string, pokemonList: string[]) => {
+      if (pokemonTypes[type]) {
+        return;
+      }
+
+      setPokemonTypes((prevPokemonTypes) => ({
+        ...prevPokemonTypes,
+        [type]: pokemonList,
+      }));
+    },
+    [pokemonTypes],
+  );
+
   return (
     <PokemonContext.Provider
       value={{
         pokemons,
         addPokemon,
         addPokemons,
+        pokemonTypes,
+        addPokemonType,
       }}
     >
       {children}
